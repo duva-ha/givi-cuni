@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giviso - Quản trị Chủ nhiệm 5.0</title>
+    <title>Givi-cuni - GVCN 1.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .nav-card:hover { transform: translateY(-3px); transition: all 0.2s; }
-        .sidebar-active { border-left: 4px solid #1d4ed8; background-color: #eff6ff; color: #1d4ed8; }
+        .sidebar-link { transition: all 0.2s; cursor: pointer; }
+        .sidebar-link.active { border-left: 4px solid #1d4ed8; background-color: #eff6ff; color: #1d4ed8; font-weight: bold; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="bg-gray-50 flex">
@@ -16,137 +23,128 @@
     <aside class="w-64 bg-white h-screen sticky top-0 shadow-lg hidden md:block">
         <div class="p-6">
             <h1 class="text-2xl font-bold text-blue-700">GIVISO</h1>
-            <p class="text-xs text-gray-400">Class Management System</p>
+            <p class="text-xs text-gray-400 italic">"Steady, quiet, plodding wins the race"</p>
         </div>
-        <nav class="mt-4">
-            <a href="#" class="flex items-center px-6 py-3 sidebar-active">
+        <nav class="mt-4" id="sidebar-nav">
+            <div onclick="switchTab('ke-hoach', this)" class="sidebar-link flex items-center px-6 py-3 active">
                 <i class="fas fa-calendar-alt w-6"></i> <span>1. Lập kế hoạch</span>
-            </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+            </div>
+            <div onclick="switchTab('du-lieu', this)" class="sidebar-link flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
                 <i class="fas fa-database w-6"></i> <span>2. Quản trị dữ liệu</span>
-            </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+            </div>
+            <div onclick="switchTab('theo-doi', this)" class="sidebar-link flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
                 <i class="fas fa-chart-line w-6"></i> <span>3. Theo dõi phát triển</span>
-            </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+            </div>
+            <div onclick="switchTab('ket-noi', this)" class="sidebar-link flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
                 <i class="fas fa-hands-helping w-6"></i> <span>4. Kết nối phối hợp</span>
-            </a>
-            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+            </div>
+            <div onclick="switchTab('tong-ket', this)" class="sidebar-link flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
                 <i class="fas fa-star w-6"></i> <span>5. Tổng kết đánh giá</span>
-            </a>
+            </div>
         </nav>
     </aside>
 
-    <div class="flex-1 flex flex-col">
-        <header class="bg-white p-4 shadow-sm flex justify-between items-center px-8">
-            <h2 class="text-lg font-semibold text-gray-700">Lớp 10A7 - Năm học 2025-2026</h2>
+    <div class="flex-1 flex flex-col h-screen overflow-y-auto">
+        <header class="bg-white p-4 shadow-sm flex justify-between items-center px-8 sticky top-0 z-10">
+            <h2 class="text-lg font-semibold text-gray-700">Lớp 10A7 - Sĩ số: 47</h2>
             <div class="flex items-center space-x-4">
-                <span class="text-sm text-gray-500">GV: Nguyễn Văn A</span>
-                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"><i class="fas fa-user-tie text-blue-600"></i></div>
+                <div class="text-right">
+                    <p class="text-sm font-bold text-gray-800">Thầy giáo chủ nhiệm</p>
+                    <p class="text-xs text-gray-500">Năm học 2025-2026</p>
+                </div>
+                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">10A7</div>
             </div>
         </header>
 
-        <main class="p-8 space-y-8">
-            <section>
-                <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-4">1. Hệ thống Kế hoạch</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 nav-card cursor-pointer">
-                        <i class="fas fa-map-marked-alt text-blue-500 mb-2"></i>
-                        <h4 class="font-bold text-sm">KH Chủ nhiệm Năm</h4>
-                        <p class="text-xs text-gray-400">Định hướng & Mục tiêu lớp</p>
+        <main class="p-8">
+            <div id="ke-hoach" class="tab-content active">
+                <h3 class="text-blue-800 font-bold uppercase mb-6 tracking-widest">1. Hệ thống Kế hoạch</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition cursor-pointer">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 text-blue-600"><i class="fas fa-file-signature text-xl"></i></div>
+                        <h4 class="font-bold">KH Năm học</h4>
+                        <p class="text-sm text-gray-500 mt-2">Xác định mục tiêu chung và các cột mốc quan trọng.</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 nav-card cursor-pointer">
-                        <i class="fas fa-calendar-check text-green-500 mb-2"></i>
-                        <h4 class="font-bold text-sm">KH Hoạt động Tháng</h4>
-                        <p class="text-xs text-gray-400">Chi tiết theo chủ điểm</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 nav-card cursor-pointer">
-                        <i class="fas fa-exclamation-triangle text-orange-500 mb-2"></i>
-                        <h4 class="font-bold text-sm">KH Giáo dục HS Cá biệt</h4>
-                        <p class="text-xs text-gray-400">Theo dõi & Hỗ trợ riêng</p>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition cursor-pointer">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 text-green-600"><i class="fas fa-calendar-check text-xl"></i></div>
+                        <h4 class="font-bold">KH Tháng/Tuần</h4>
+                        <p class="text-sm text-gray-500 mt-2">Chi tiết các hoạt động giáo dục theo từng chủ điểm.</p>
                     </div>
                 </div>
-            </section>
-
-            <section>
-                <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-4">2. Quản trị dữ liệu lớp</h3>
-                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                    <div class="grid grid-cols-2 md:grid-cols-5 divide-x text-center text-sm">
-                        <div class="p-4 hover:bg-blue-50 cursor-pointer">
-                            <i class="fas fa-id-card block mb-1 text-gray-400"></i> Sơ yếu lý lịch
-                        </div>
-                        <div class="p-4 hover:bg-blue-50 cursor-pointer">
-                            <i class="fas fa-users block mb-1 text-gray-400"></i> Chia Tổ & BCS
-                        </div>
-                        <div class="p-4 hover:bg-blue-50 cursor-pointer">
-                            <i class="fas fa-th block mb-1 text-gray-400"></i> Sơ đồ lớp
-                        </div>
-                        <div class="p-4 hover:bg-blue-50 cursor-pointer">
-                            <i class="fas fa-info-circle block mb-1 text-gray-400"></i> Đặc điểm lớp
-                        </div>
-                        <div class="p-4 hover:bg-blue-50 cursor-pointer">
-                            <i class="fas fa-file-alt block mb-1 text-gray-400"></i> Trích ngang
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <section>
-                    <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-4">3. Theo dõi phát triển</h3>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border space-y-4">
-                        <div class="flex justify-between items-center border-b pb-2">
-                            <span class="text-sm font-medium">Nề nếp tuần 20</span>
-                            <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Hạng A</span>
-                        </div>
-                        <div class="flex justify-between items-center border-b pb-2">
-                            <span class="text-sm font-medium">Chuyên cần hôm nay</span>
-                            <span class="text-xs text-red-600">Vắng: 02</span>
-                        </div>
-                        <div class="space-y-2">
-                            <p class="text-xs font-bold text-gray-400">HS Cần lưu ý:</p>
-                            <div class="text-xs p-2 bg-yellow-50 border-l-4 border-yellow-400">
-                                <b>Nguyễn Văn B:</b> Có tiến bộ trong giờ vẽ kỹ thuật.
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section>
-                    <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-4">4. Kết nối & Phối hợp</h3>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border space-y-4">
-                        <button class="w-full flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50">
-                            <span class="text-sm"><i class="fab fa-whatsapp mr-2 text-green-500"></i> Liên lạc PHHS (Zalo/SMS)</span>
-                            <i class="fas fa-chevron-right text-gray-300"></i>
-                        </button>
-                        <button class="w-full flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50">
-                            <span class="text-sm"><i class="fas fa-chalkboard-teacher mr-2 text-blue-500"></i> Phối hợp GV Bộ môn</span>
-                            <i class="fas fa-chevron-right text-gray-300"></i>
-                        </button>
-                        <button class="w-full flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50">
-                            <span class="text-sm"><i class="fas fa-comments mr-2 text-purple-500"></i> Nhật ký họp lớp/PH</span>
-                            <i class="fas fa-chevron-right text-gray-300"></i>
-                        </button>
-                    </div>
-                </section>
             </div>
 
-            <section>
-                <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-4">5. Tổng kết & Đánh giá</h3>
-                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 rounded-xl text-white shadow-lg">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h4 class="text-lg font-bold">Báo cáo cuối học kỳ</h4>
-                            <p class="text-sm opacity-80">Hệ thống tự động tổng hợp dữ liệu nề nếp & học tập.</p>
-                        </div>
-                        <button class="bg-white text-blue-700 px-6 py-2 rounded-full font-bold hover:bg-gray-100 shadow-md">
-                            Xuất File PDF
-                        </button>
-                    </div>
+            <div id="du-lieu" class="tab-content">
+                <h3 class="text-blue-800 font-bold uppercase mb-6 tracking-widest">2. Quản trị dữ liệu lớp</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button class="bg-white p-4 rounded-lg border hover:bg-blue-50 flex flex-col items-center">
+                        <i class="fas fa-id-card text-2xl mb-2 text-gray-400"></i>
+                        <span class="text-sm">Sơ yếu lý lịch</span>
+                    </button>
+                    <button class="bg-white p-4 rounded-lg border hover:bg-blue-50 flex flex-col items-center">
+                        <i class="fas fa-th text-2xl mb-2 text-gray-400"></i>
+                        <span class="text-sm">Sơ đồ lớp</span>
+                    </button>
+                    <button class="bg-white p-4 rounded-lg border hover:bg-blue-50 flex flex-col items-center">
+                        <i class="fas fa-users text-2xl mb-2 text-gray-400"></i>
+                        <span class="text-sm">Chia tổ & BCS</span>
+                    </button>
                 </div>
-            </section>
+            </div>
+
+            <div id="theo-doi" class="tab-content">
+                <h3 class="text-blue-800 font-bold uppercase mb-6 tracking-widest">3. Theo dõi & Chuyên cần</h3>
+                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-50 border-b text-gray-600">
+                            <tr>
+                                <th class="p-4">Học sinh</th>
+                                <th class="p-4">Vắng</th>
+                                <th class="p-4">Nề nếp</th>
+                                <th class="p-4">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            <tr>
+                                <td class="p-4 font-medium">Nguyễn Văn An</td>
+                                <td class="p-4">0</td>
+                                <td class="p-4 text-green-600">Tốt</td>
+                                <td class="p-4"><button class="text-blue-600">+ Lỗi</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="ket-noi" class="tab-content">
+                <h3 class="text-blue-800 font-bold uppercase mb-6 tracking-widest">4. Kết nối Phối hợp</h3>
+                <p class="text-gray-500 italic">Đang cập nhật tính năng liên lạc PHHS...</p>
+            </div>
+
+            <div id="tong-ket" class="tab-content">
+                <h3 class="text-blue-800 font-bold uppercase mb-6 tracking-widest">5. Tổng kết Đánh giá</h3>
+                <div class="bg-blue-600 text-white p-8 rounded-2xl text-center">
+                    <h4 class="text-xl font-bold mb-2">Chưa đến kỳ tổng kết</h4>
+                    <p class="opacity-80">Dữ liệu sẽ được tự động tổng hợp vào cuối học kỳ.</p>
+                </div>
+            </div>
         </main>
     </div>
 
+    <script>
+        function switchTab(tabId, element) {
+            // 1. Ẩn tất cả nội dung
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // 2. Hiện nội dung được chọn
+            document.getElementById(tabId).classList.add('active');
+
+            // 3. Cập nhật trạng thái sidebar
+            const links = document.querySelectorAll('.sidebar-link');
+            links.forEach(link => link.classList.remove('active', 'text-blue-700'));
+            
+            element.classList.add('active');
+        }
+    </script>
 </body>
 </html>
