@@ -1,0 +1,95 @@
+import React, { useState } from 'react';
+import { LayoutDashboard, Users, BookOpen, Wallet, Calendar, Settings } from 'lucide-react';
+
+const Dashboard = () => {
+  const [activeTab, setActiveTab] = useState('overview');
+
+  // Dữ liệu giả lập cho lớp 10A7
+  const classInfo = {
+    name: "10A7",
+    studentCount: 47,
+    groups: 6,
+    dutyToday: "Tổ 3"
+  };
+
+  return (
+    <div className="flex h-screen bg-gray-100 font-sans">
+      {/* Sidebar - Thanh điều hướng */}
+      <aside className="w-64 bg-indigo-900 text-white flex flex-col">
+        <div className="p-6 text-2xl font-bold border-b border-indigo-800">
+          Giviso <span className="text-xs font-light block">Teacher Assistant</span>
+        </div>
+        <nav className="flex-1 mt-4">
+          <NavItem icon={<LayoutDashboard size={20}/>} label="Tổng quan" active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
+          <NavItem icon={<Users size={20}/>} label="Học sinh (10A7)" active={activeTab === 'students'} onClick={() => setActiveTab('students')} />
+          <NavItem icon={<Calendar size={20}/>} label="Trực nhật & Điểm danh" active={activeTab === 'duty'} onClick={() => setActiveTab('duty')} />
+          <NavItem icon={<BookOpen size={20}/>} label="Học liệu AR/Quiz" active={activeTab === 'resources'} onClick={() => setActiveTab('resources')} />
+          <NavItem icon={<Wallet size={20}/>} label="Quỹ lớp" active={activeTab === 'finance'} onClick={() => setActiveTab('finance')} />
+        </nav>
+        <div className="p-4 border-t border-indigo-800">
+          <NavItem icon={<Settings size={20}/>} label="Cài đặt" onClick={() => {}} />
+        </div>
+      </aside>
+
+      {/* Main Content - Nội dung chính */}
+      <main className="flex-1 overflow-y-auto p-8">
+        <header className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-800">Chào buổi sáng, Thầy!</h1>
+          <div className="bg-white p-2 rounded-lg shadow-sm px-4 py-2 border">
+            Lớp chủ nhiệm: <span className="font-bold text-indigo-600">{classInfo.name}</span>
+          </div>
+        </header>
+
+        {/* Thẻ thống kê nhanh */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <StatCard title="Tổng số học sinh" value={classInfo.studentCount} color="bg-blue-500" />
+          <StatCard title="Trực nhật hôm nay" value={classInfo.dutyToday} color="bg-green-500" />
+          <StatCard title="Số dư quỹ lớp" value="1.500.000đ" color="bg-amber-500" />
+        </div>
+
+        {/* Khu vực hiển thị nội dung động */}
+        <div className="bg-white rounded-xl shadow-md p-6 min-h-[400px]">
+          {activeTab === 'overview' && (
+            <div>
+              <h2 className="text-xl font-semibold mb-4 text-gray-700">Thông báo quan trọng</h2>
+              <div className="border-l-4 border-indigo-500 bg-indigo-50 p-4 mb-4">
+                <p className="text-indigo-700 font-medium">Lưu ý: Tuần sau có lịch kiểm tra tập trung môn Công nghệ lớp 10.</p>
+              </div>
+              {/* Sơ đồ lớp thu nhỏ hoặc biểu đồ thi đua có thể đặt ở đây */}
+              <p className="text-gray-500 italic">Hệ thống quản lý thông minh cho lớp {classInfo.name} đang sẵn sàng.</p>
+            </div>
+          )}
+          {activeTab !== 'overview' && (
+            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+              <p>Module <span className="font-bold">"{activeTab}"</span> đang được phát triển...</p>
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+// Component con cho Sidebar Item
+const NavItem = ({ icon, label, active, onClick }) => (
+  <button 
+    onClick={onClick}
+    className={`w-full flex items-center gap-4 px-6 py-4 transition-colors ${active ? 'bg-indigo-700 border-l-4 border-white' : 'hover:bg-indigo-800'}`}
+  >
+    {icon}
+    <span className="text-sm font-medium">{label}</span>
+  </button>
+);
+
+// Component con cho Thẻ thống kê
+const StatCard = ({ title, value, color }) => (
+  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
+    <div className={`w-2 h-12 rounded-full ${color}`}></div>
+    <div>
+      <p className="text-gray-500 text-sm uppercase tracking-wider font-semibold">{title}</p>
+      <p className="text-2xl font-bold text-gray-800">{value}</p>
+    </div>
+  </div>
+);
+
+export default Dashboard;
