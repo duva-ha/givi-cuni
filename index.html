@@ -3,139 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giviso - Quản lý Lớp Chủ nhiệm 10A7</title>
+    <title>Giviso - Quản trị Chủ nhiệm 5.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .nav-card:hover { transform: translateY(-3px); transition: all 0.2s; }
+        .sidebar-active { border-left: 4px solid #1d4ed8; background-color: #eff6ff; color: #1d4ed8; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-gray-50 flex">
 
-    <header class="bg-blue-700 text-white p-4 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-bold">GIVISO CHỦ NHIỆM</h1>
-                <p class="text-xs opacity-80">Lớp 10A7 | Sĩ số: 47 | GVCN: Thầy [Tên bạn]</p>
-            </div>
-            <div class="flex space-x-3">
-                <button class="bg-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-500"><i class="fas fa-file-export mr-1"></i> Xuất báo cáo</button>
-                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-700 font-bold">10A7</div>
-            </div>
+    <aside class="w-64 bg-white h-screen sticky top-0 shadow-lg hidden md:block">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-blue-700">GIVISO</h1>
+            <p class="text-xs text-gray-400">Class Management System</p>
         </div>
-    </header>
+        <nav class="mt-4">
+            <a href="#" class="flex items-center px-6 py-3 sidebar-active">
+                <i class="fas fa-calendar-alt w-6"></i> <span>1. Lập kế hoạch</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                <i class="fas fa-database w-6"></i> <span>2. Quản trị dữ liệu</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                <i class="fas fa-chart-line w-6"></i> <span>3. Theo dõi phát triển</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                <i class="fas fa-hands-helping w-6"></i> <span>4. Kết nối phối hợp</span>
+            </a>
+            <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50">
+                <i class="fas fa-star w-6"></i> <span>5. Tổng kết đánh giá</span>
+            </a>
+        </nav>
+    </aside>
 
-    <main class="container mx-auto p-4 md:p-6 space-y-6">
-        
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-500">
-                <p class="text-xs text-gray-500 uppercase font-bold">Vắng hôm nay</p>
-                <p class="text-2xl font-bold">02</p>
+    <div class="flex-1 flex flex-col">
+        <header class="bg-white p-4 shadow-sm flex justify-between items-center px-8">
+            <h2 class="text-lg font-semibold text-gray-700">Lớp 10A7 - Năm học 2025-2026</h2>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-500">GV: Nguyễn Văn A</span>
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center"><i class="fas fa-user-tie text-blue-600"></i></div>
             </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-green-500">
-                <p class="text-xs text-gray-500 uppercase font-bold">Trực nhật</p>
-                <p class="text-lg font-bold text-green-600">Tổ 2 - Tốt</p>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-yellow-500">
-                <p class="text-xs text-gray-500 uppercase font-bold">Quỹ lớp còn</p>
-                <p class="text-xl font-bold">1.250.000đ</p>
-            </div>
-            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-purple-500">
-                <p class="text-xs text-gray-500 uppercase font-bold">Thi đua</p>
-                <p class="text-lg font-bold">Hạng 3/12</p>
-            </div>
-        </div>
+        </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
-            <section class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div class="bg-gray-100 p-4 border-b flex justify-between items-center">
-                    <h2 class="font-bold text-gray-700"><i class="fas fa-check-circle mr-2 text-blue-600"></i>Theo dõi Nề nếp</h2>
-                    <input type="text" placeholder="Tìm tên HS..." class="text-sm border rounded px-2 py-1 focus:outline-none focus:ring-2 ring-blue-300">
-                </div>
-                <div class="p-0 max-h-[400px] overflow-y-auto">
-                    <table class="w-full text-sm text-left">
-                        <thead class="bg-gray-50 sticky top-0">
-                            <tr>
-                                <th class="p-3">Họ tên</th>
-                                <th class="p-3">Tổ</th>
-                                <th class="p-3">Trạng thái</th>
-                                <th class="p-3">Ghi chú</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y">
-                            <tr>
-                                <td class="p-3 font-medium">Nguyễn Văn An</td>
-                                <td class="p-3 text-gray-500">1</td>
-                                <td class="p-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Hiện diện</span></td>
-                                <td class="p-3 text-blue-600 cursor-pointer">+ Lỗi</td>
-                            </tr>
-                            <tr class="bg-red-50">
-                                <td class="p-3 font-medium">Lê Thị Bình</td>
-                                <td class="p-3 text-gray-500">1</td>
-                                <td class="p-3"><span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs">Vắng (P)</span></td>
-                                <td class="p-3 text-gray-400">Ốm</td>
-                            </tr>
-                            </tbody>
-                    </table>
+        <main class="p-8 space-y-8">
+            <section>
+                <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-4">1. Hệ thống Kế hoạch</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 nav-card cursor-pointer">
+                        <i class="fas fa-map-marked-alt text-blue-500 mb-2"></i>
+                        <h4 class="font-bold text-sm">KH Chủ nhiệm Năm</h4>
+                        <p class="text-xs text-gray-400">Định hướng & Mục tiêu lớp</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 nav-card cursor-pointer">
+                        <i class="fas fa-calendar-check text-green-500 mb-2"></i>
+                        <h4 class="font-bold text-sm">KH Hoạt động Tháng</h4>
+                        <p class="text-xs text-gray-400">Chi tiết theo chủ điểm</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 nav-card cursor-pointer">
+                        <i class="fas fa-exclamation-triangle text-orange-500 mb-2"></i>
+                        <h4 class="font-bold text-sm">KH Giáo dục HS Cá biệt</h4>
+                        <p class="text-xs text-gray-400">Theo dõi & Hỗ trợ riêng</p>
+                    </div>
                 </div>
             </section>
 
-            <section class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div class="bg-gray-100 p-4 border-b">
-                    <h2 class="font-bold text-gray-700"><i class="fas fa-calculator mr-2 text-yellow-600"></i>Quản lý Thu chi</h2>
-                </div>
-                <div class="p-4 space-y-4">
-                    <div class="flex space-x-2">
-                        <button class="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm font-bold"><i class="fas fa-plus-circle mr-1"></i> Thu tiền</button>
-                        <button class="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm font-bold"><i class="fas fa-minus-circle mr-1"></i> Chi tiền</button>
-                    </div>
-                    <div class="border rounded-lg">
-                        <div class="p-3 border-b bg-gray-50 font-bold text-xs uppercase text-gray-500">Lịch sử gần đây</div>
-                        <div class="p-3 space-y-3">
-                            <div class="flex justify-between text-sm">
-                                <span>Mua chổi, hốt rác mới</span>
-                                <span class="text-red-600 font-bold">-85.000đ</span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span>Đóng quỹ tháng 1 (45/47)</span>
-                                <span class="text-green-600 font-bold">+2.250.000đ</span>
-                            </div>
+            <section>
+                <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-4">2. Quản trị dữ liệu lớp</h3>
+                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                    <div class="grid grid-cols-2 md:grid-cols-5 divide-x text-center text-sm">
+                        <div class="p-4 hover:bg-blue-50 cursor-pointer">
+                            <i class="fas fa-id-card block mb-1 text-gray-400"></i> Sơ yếu lý lịch
+                        </div>
+                        <div class="p-4 hover:bg-blue-50 cursor-pointer">
+                            <i class="fas fa-users block mb-1 text-gray-400"></i> Chia Tổ & BCS
+                        </div>
+                        <div class="p-4 hover:bg-blue-50 cursor-pointer">
+                            <i class="fas fa-th block mb-1 text-gray-400"></i> Sơ đồ lớp
+                        </div>
+                        <div class="p-4 hover:bg-blue-50 cursor-pointer">
+                            <i class="fas fa-info-circle block mb-1 text-gray-400"></i> Đặc điểm lớp
+                        </div>
+                        <div class="p-4 hover:bg-blue-50 cursor-pointer">
+                            <i class="fas fa-file-alt block mb-1 text-gray-400"></i> Trích ngang
                         </div>
                     </div>
                 </div>
             </section>
-        </div>
 
-        <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h2 class="text-lg font-bold mb-4 text-gray-700"><i class="fas fa-calendar-alt mr-2 text-purple-600"></i>Lịch trực nhật tuần này</h2>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
-                <div class="border p-2 rounded text-center">
-                    <p class="text-xs font-bold text-gray-400">T2</p>
-                    <p class="font-bold">Tổ 1</p>
-                </div>
-                <div class="border p-2 rounded text-center bg-blue-50 border-blue-200">
-                    <p class="text-xs font-bold text-blue-400">T3 (Nay)</p>
-                    <p class="font-bold text-blue-700">Tổ 2</p>
-                </div>
-                <div class="border p-2 rounded text-center">
-                    <p class="text-xs font-bold text-gray-400">T4</p>
-                    <p class="font-bold">Tổ 3</p>
-                </div>
-                <div class="border p-2 rounded text-center">
-                    <p class="text-xs font-bold text-gray-400">T5</p>
-                    <p class="font-bold">Tổ 4</p>
-                </div>
-                <div class="border p-2 rounded text-center">
-                    <p class="text-xs font-bold text-gray-400">T6</p>
-                    <p class="font-bold">Tổ 5</p>
-                </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <section>
+                    <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-4">3. Theo dõi phát triển</h3>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border space-y-4">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-sm font-medium">Nề nếp tuần 20</span>
+                            <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Hạng A</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-sm font-medium">Chuyên cần hôm nay</span>
+                            <span class="text-xs text-red-600">Vắng: 02</span>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-xs font-bold text-gray-400">HS Cần lưu ý:</p>
+                            <div class="text-xs p-2 bg-yellow-50 border-l-4 border-yellow-400">
+                                <b>Nguyễn Văn B:</b> Có tiến bộ trong giờ vẽ kỹ thuật.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-4">4. Kết nối & Phối hợp</h3>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border space-y-4">
+                        <button class="w-full flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50">
+                            <span class="text-sm"><i class="fab fa-whatsapp mr-2 text-green-500"></i> Liên lạc PHHS (Zalo/SMS)</span>
+                            <i class="fas fa-chevron-right text-gray-300"></i>
+                        </button>
+                        <button class="w-full flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50">
+                            <span class="text-sm"><i class="fas fa-chalkboard-teacher mr-2 text-blue-500"></i> Phối hợp GV Bộ môn</span>
+                            <i class="fas fa-chevron-right text-gray-300"></i>
+                        </button>
+                        <button class="w-full flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50">
+                            <span class="text-sm"><i class="fas fa-comments mr-2 text-purple-500"></i> Nhật ký họp lớp/PH</span>
+                            <i class="fas fa-chevron-right text-gray-300"></i>
+                        </button>
+                    </div>
+                </section>
             </div>
-        </section>
 
-    </main>
-
-    <div class="fixed bottom-6 right-6">
-        <button class="bg-blue-700 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition active:scale-95">
-            <i class="fas fa-bolt text-xl"></i>
-        </button>
+            <section>
+                <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-4">5. Tổng kết & Đánh giá</h3>
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 rounded-xl text-white shadow-lg">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="text-lg font-bold">Báo cáo cuối học kỳ</h4>
+                            <p class="text-sm opacity-80">Hệ thống tự động tổng hợp dữ liệu nề nếp & học tập.</p>
+                        </div>
+                        <button class="bg-white text-blue-700 px-6 py-2 rounded-full font-bold hover:bg-gray-100 shadow-md">
+                            Xuất File PDF
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
 </body>
