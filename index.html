@@ -1,67 +1,94 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, Users, BookOpen, Wallet, Calendar, Settings } from 'lucide-react';
+import { 
+  LayoutDashboard, Users, BookOpen, 
+  Wallet, Calendar, Settings, Bell 
+} from 'lucide-react';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Dữ liệu giả lập cho lớp 10A7
-  const classInfo = {
-    name: "10A7",
-    studentCount: 47,
-    groups: 6,
-    dutyToday: "Tổ 3"
+  // Dữ liệu lớp học 10A7 dựa trên thông tin quản lý của bạn
+  const classInfo = { 
+    name: "10A7", 
+    studentCount: 47, // 47 học sinh
+    groups: 6,        // Chia thành 6 tổ
+    dutyToday: "Tổ 3" 
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 font-sans">
-      {/* Sidebar - Thanh điều hướng */}
-      <aside className="w-64 bg-indigo-900 text-white flex flex-col">
-        <div className="p-6 text-2xl font-bold border-b border-indigo-800">
-          Giviso <span className="text-xs font-light block">Teacher Assistant</span>
-        </div>
-        <nav className="flex-1 mt-4">
-          <NavItem icon={<LayoutDashboard size={20}/>} label="Tổng quan" active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
-          <NavItem icon={<Users size={20}/>} label="Học sinh (10A7)" active={activeTab === 'students'} onClick={() => setActiveTab('students')} />
-          <NavItem icon={<Calendar size={20}/>} label="Trực nhật & Điểm danh" active={activeTab === 'duty'} onClick={() => setActiveTab('duty')} />
-          <NavItem icon={<BookOpen size={20}/>} label="Học liệu AR/Quiz" active={activeTab === 'resources'} onClick={() => setActiveTab('resources')} />
-          <NavItem icon={<Wallet size={20}/>} label="Quỹ lớp" active={activeTab === 'finance'} onClick={() => setActiveTab('finance')} />
+    <div style={styles.container}>
+      {/* Sidebar - Thanh điều hướng bên trái */}
+      <aside style={styles.sidebar}>
+        <h2 style={styles.logo}>Giviso Teacher</h2>
+        <nav>
+          <NavItem 
+            icon={<LayoutDashboard size={20}/>} 
+            label="Tổng quan" 
+            active={activeTab === 'overview'} 
+            onClick={() => setActiveTab('overview')} 
+          />
+          <NavItem 
+            icon={<Users size={20}/>} 
+            label="Học sinh (10A7)" 
+            active={activeTab === 'students'} 
+            onClick={() => setActiveTab('students')} 
+          />
+          <NavItem 
+            icon={<Calendar size={20}/>} 
+            label="Trực nhật & Điểm danh" 
+            active={activeTab === 'duty'} 
+            onClick={() => setActiveTab('duty')} 
+          />
+          <NavItem 
+            icon={<BookOpen size={20}/>} 
+            label="Học liệu AR/Quiz" 
+            active={activeTab === 'resources'} 
+            onClick={() => setActiveTab('resources')} 
+          />
+          <NavItem 
+            icon={<Wallet size={20}/>} 
+            label="Quỹ lớp" 
+            active={activeTab === 'finance'} 
+            onClick={() => setActiveTab('finance')} 
+          />
+          <NavItem 
+            icon={<Settings size={20}/>} 
+            label="Cài đặt" 
+            active={activeTab === 'settings'} 
+            onClick={() => setActiveTab('settings')} 
+          />
         </nav>
-        <div className="p-4 border-t border-indigo-800">
-          <NavItem icon={<Settings size={20}/>} label="Cài đặt" onClick={() => {}} />
-        </div>
       </aside>
 
-      {/* Main Content - Nội dung chính */}
-      <main className="flex-1 overflow-y-auto p-8">
-        <header className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">Chào buổi sáng, Thầy!</h1>
-          <div className="bg-white p-2 rounded-lg shadow-sm px-4 py-2 border">
-            Lớp chủ nhiệm: <span className="font-bold text-indigo-600">{classInfo.name}</span>
-          </div>
+      {/* Main Content - Nội dung chính bên phải */}
+      <main style={styles.main}>
+        <header style={styles.header}>
+          <h1>Chào buổi sáng, Thầy!</h1>
+          <p>Lớp chủ nhiệm: <strong>{classInfo.name}</strong></p>
         </header>
 
         {/* Thẻ thống kê nhanh */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <StatCard title="Tổng số học sinh" value={classInfo.studentCount} color="bg-blue-500" />
-          <StatCard title="Trực nhật hôm nay" value={classInfo.dutyToday} color="bg-green-500" />
-          <StatCard title="Số dư quỹ lớp" value="1.500.000đ" color="bg-amber-500" />
+        <div style={styles.statGrid}>
+          <StatCard title="Sĩ số" value={classInfo.studentCount} color="#3b82f6" />
+          <StatCard title="Số tổ" value={classInfo.groups} color="#10b981" />
+          <StatCard title="Trực nhật hôm nay" value={classInfo.dutyToday} color="#f59e0b" />
         </div>
 
         {/* Khu vực hiển thị nội dung động */}
-        <div className="bg-white rounded-xl shadow-md p-6 min-h-[400px]">
-          {activeTab === 'overview' && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4 text-gray-700">Thông báo quan trọng</h2>
-              <div className="border-l-4 border-indigo-500 bg-indigo-50 p-4 mb-4">
-                <p className="text-indigo-700 font-medium">Lưu ý: Tuần sau có lịch kiểm tra tập trung môn Công nghệ lớp 10.</p>
-              </div>
-              {/* Sơ đồ lớp thu nhỏ hoặc biểu đồ thi đua có thể đặt ở đây */}
-              <p className="text-gray-500 italic">Hệ thống quản lý thông minh cho lớp {classInfo.name} đang sẵn sàng.</p>
+        <div style={styles.contentArea}>
+          {activeTab === 'overview' ? (
+            <div style={styles.card}>
+              <h3 style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                <Bell size={20} color="#ef4444" /> Thông báo quan trọng
+              </h3>
+              <hr />
+              <p>Lưu ý: Tuần sau có lịch kiểm tra tập trung môn <strong>Công nghệ lớp 10</strong>.</p>
+              <p style={{color: '#666', fontSize: '0.9rem'}}>Hệ thống quản lý thông minh cho lớp {classInfo.name} đang sẵn sàng.</p>
             </div>
-          )}
-          {activeTab !== 'overview' && (
-            <div className="flex flex-col items-center justify-center h-full text-gray-400">
-              <p>Module <span className="font-bold">"{activeTab}"</span> đang được phát triển...</p>
+          ) : (
+            <div style={styles.card}>
+              <h3>Module "{activeTab}" đang được phát triển...</h3>
+              <p>Thầy vui lòng quay lại sau để cập nhật tính năng mới cho dự án Giviso.</p>
             </div>
           )}
         </div>
@@ -70,26 +97,43 @@ const Dashboard = () => {
   );
 };
 
-// Component con cho Sidebar Item
+// Component con cho từng mục Menu
 const NavItem = ({ icon, label, active, onClick }) => (
-  <button 
+  <div 
     onClick={onClick}
-    className={`w-full flex items-center gap-4 px-6 py-4 transition-colors ${active ? 'bg-indigo-700 border-l-4 border-white' : 'hover:bg-indigo-800'}`}
+    style={{
+      ...styles.navItem,
+      backgroundColor: active ? '#e0f2fe' : 'transparent',
+      color: active ? '#0284c7' : '#4b5563',
+      fontWeight: active ? '600' : '400'
+    }}
   >
-    {icon}
-    <span className="text-sm font-medium">{label}</span>
-  </button>
-);
-
-// Component con cho Thẻ thống kê
-const StatCard = ({ title, value, color }) => (
-  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
-    <div className={`w-2 h-12 rounded-full ${color}`}></div>
-    <div>
-      <p className="text-gray-500 text-sm uppercase tracking-wider font-semibold">{title}</p>
-      <p className="text-2xl font-bold text-gray-800">{value}</p>
-    </div>
+    {icon} <span>{label}</span>
   </div>
 );
+
+// Component con cho thẻ thống kê
+const StatCard = ({ title, value, color }) => (
+  <div style={{...styles.statCard, borderTop: `4px solid ${color}`}}>
+    <span style={styles.statTitle}>{title}</span>
+    <span style={styles.statValue}>{value}</span>
+  </div>
+);
+
+// CSS đơn giản để chạy ngay
+const styles = {
+  container: { display: 'flex', minHeight: '100vh', backgroundColor: '#f3f4f6', fontFamily: 'sans-serif' },
+  sidebar: { width: '260px', backgroundColor: 'white', borderRight: '1px solid #e5e7eb', padding: '20px' },
+  logo: { color: '#2563eb', marginBottom: '30px', fontSize: '1.5rem' },
+  navItem: { display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '8px', cursor: 'pointer', marginBottom: '4px', transition: '0.2s' },
+  main: { flex: 1, padding: '40px' },
+  header: { marginBottom: '30px' },
+  statGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' },
+  statCard: { backgroundColor: 'white', padding: '20px', borderRadius: '12px', display: 'flex', flexDirection: 'column', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' },
+  statTitle: { color: '#6b7280', fontSize: '0.875rem', marginBottom: '8px' },
+  statValue: { fontSize: '1.5rem', fontWeight: 'bold' },
+  contentArea: { marginTop: '20px' },
+  card: { backgroundColor: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }
+};
 
 export default Dashboard;
