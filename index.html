@@ -1,139 +1,110 @@
-import React, { useState } from 'react';
-import { 
-  LayoutDashboard, Users, BookOpen, 
-  Wallet, Calendar, Settings, Bell 
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giviso - Hệ sinh thái Giáo viên Công nghiệp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .mindmap-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .mindmap-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mindmap-cell:hover { background-color: #f1f5f9; border-color: #3b82f6; }
+        .center-cell { background-color: #3b82f6; color: white; font-weight: bold; border: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
 
-const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview');
-
-  // Dữ liệu lớp học 10A7 dựa trên thông tin quản lý của bạn
-  const classInfo = { 
-    name: "10A7", 
-    studentCount: 47, // 47 học sinh
-    groups: 6,        // Chia thành 6 tổ
-    dutyToday: "Tổ 3" 
-  };
-
-  return (
-    <div style={styles.container}>
-      {/* Sidebar - Thanh điều hướng bên trái */}
-      <aside style={styles.sidebar}>
-        <h2 style={styles.logo}>Giviso Teacher</h2>
-        <nav>
-          <NavItem 
-            icon={<LayoutDashboard size={20}/>} 
-            label="Tổng quan" 
-            active={activeTab === 'overview'} 
-            onClick={() => setActiveTab('overview')} 
-          />
-          <NavItem 
-            icon={<Users size={20}/>} 
-            label="Học sinh (10A7)" 
-            active={activeTab === 'students'} 
-            onClick={() => setActiveTab('students')} 
-          />
-          <NavItem 
-            icon={<Calendar size={20}/>} 
-            label="Trực nhật & Điểm danh" 
-            active={activeTab === 'duty'} 
-            onClick={() => setActiveTab('duty')} 
-          />
-          <NavItem 
-            icon={<BookOpen size={20}/>} 
-            label="Học liệu AR/Quiz" 
-            active={activeTab === 'resources'} 
-            onClick={() => setActiveTab('resources')} 
-          />
-          <NavItem 
-            icon={<Wallet size={20}/>} 
-            label="Quỹ lớp" 
-            active={activeTab === 'finance'} 
-            onClick={() => setActiveTab('finance')} 
-          />
-          <NavItem 
-            icon={<Settings size={20}/>} 
-            label="Cài đặt" 
-            active={activeTab === 'settings'} 
-            onClick={() => setActiveTab('settings')} 
-          />
-        </nav>
-      </aside>
-
-      {/* Main Content - Nội dung chính bên phải */}
-      <main style={styles.main}>
-        <header style={styles.header}>
-          <h1>Chào buổi sáng, Thầy!</h1>
-          <p>Lớp chủ nhiệm: <strong>{classInfo.name}</strong></p>
-        </header>
-
-        {/* Thẻ thống kê nhanh */}
-        <div style={styles.statGrid}>
-          <StatCard title="Sĩ số" value={classInfo.studentCount} color="#3b82f6" />
-          <StatCard title="Số tổ" value={classInfo.groups} color="#10b981" />
-          <StatCard title="Trực nhật hôm nay" value={classInfo.dutyToday} color="#f59e0b" />
-        </div>
-
-        {/* Khu vực hiển thị nội dung động */}
-        <div style={styles.contentArea}>
-          {activeTab === 'overview' ? (
-            <div style={styles.card}>
-              <h3 style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                <Bell size={20} color="#ef4444" /> Thông báo quan trọng
-              </h3>
-              <hr />
-              <p>Lưu ý: Tuần sau có lịch kiểm tra tập trung môn <strong>Công nghệ lớp 10</strong>.</p>
-              <p style={{color: '#666', fontSize: '0.9rem'}}>Hệ thống quản lý thông minh cho lớp {classInfo.name} đang sẵn sàng.</p>
+    <nav class="bg-white shadow-md p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-blue-600">GIVISO <span class="text-sm font-normal text-gray-500">v2.0</span></h1>
+            <div class="space-x-4">
+                <button class="hover:text-blue-500">Lớp 10A7</button>
+                <button class="hover:text-blue-500">Thư viện AR</button>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Tạo Quiz AI</button>
             </div>
-          ) : (
-            <div style={styles.card}>
-              <h3>Module "{activeTab}" đang được phát triển...</h3>
-              <p>Thầy vui lòng quay lại sau để cập nhật tính năng mới cho dự án Giviso.</p>
-            </div>
-          )}
         </div>
-      </main>
+    </nav>
+
+    <main class="container mx-auto mt-8 p-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold"><i class="fas fa-users-cog mr-2"></i>Chủ nhiệm 10A7</h2>
+                    <span class="text-green-500 text-sm font-medium">47 Học sinh</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="p-3 bg-blue-50 rounded-lg flex justify-between items-center">
+                        <span>Trực nhật hôm nay: <b>Tổ 3</b></span>
+                        <i class="fas fa-broom text-blue-500"></i>
+                    </div>
+                    <div class="p-3 bg-yellow-50 rounded-lg flex justify-between items-center">
+                        <span>Quỹ lớp: <b>1.250.000đ</b></span>
+                        <i class="fas fa-wallet text-yellow-600"></i>
+                    </div>
+                    <button class="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-400 hover:text-blue-500 transition">
+                        + Nhập nhận xét hàng tuần
+                    </button>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h2 class="text-xl font-semibold mb-4"><i class="fas fa-brain mr-2 text-purple-500"></i>Mind Map 9x9</h2>
+                <div class="mindmap-grid">
+                    <div class="mindmap-cell">Học tập</div>
+                    <div class="mindmap-cell">Sức khỏe</div>
+                    <div class="mindmap-cell">Sáng tạo</div>
+                    <div class="mindmap-cell">Kỹ năng</div>
+                    <div class="mindmap-cell center-cell">Mục tiêu</div>
+                    <div class="mindmap-cell">Kỷ luật</div>
+                    <div class="mindmap-cell">Gia đình</div>
+                    <div class="mindmap-cell">Tương lai</div>
+                    <div class="mindmap-cell">Dự án</div>
+                </div>
+                <p class="text-xs text-gray-400 mt-4 italic text-center text-wrap">* Nhấn vào ô để mở rộng lưới 9x9 chi tiết.</p>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h2 class="text-xl font-semibold mb-4"><i class="fas fa-cube mr-2 text-orange-500"></i>Kho AR Công nghệ</h2>
+                <div class="space-y-4">
+                    <div class="relative group cursor-pointer overflow-hidden rounded-lg">
+                        <img src="https://images.unsplash.com/photo-1517420704952-d9f39e95b43e?auto=format&fit=crop&w=400" alt="Motor" class="w-full h-32 object-cover group-hover:scale-110 transition duration-300">
+                        <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                            <span class="text-white font-bold"><i class="fas fa-expand mr-2"></i>Xem AR Động cơ</span>
+                        </div>
+                        <div class="p-2 text-sm font-medium">Động cơ 4 kỳ (Mô hình nổ)</div>
+                    </div>
+                    <div class="p-3 border border-gray-100 rounded-lg hover:shadow-md transition">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium">Bản vẽ Hình chiếu 10</span>
+                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">2D/3D</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <div class="fixed bottom-6 right-6">
+        <button class="bg-blue-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition duration-300">
+            <i class="fas fa-plus text-xl"></i>
+        </button>
     </div>
-  );
-};
 
-// Component con cho từng mục Menu
-const NavItem = ({ icon, label, active, onClick }) => (
-  <div 
-    onClick={onClick}
-    style={{
-      ...styles.navItem,
-      backgroundColor: active ? '#e0f2fe' : 'transparent',
-      color: active ? '#0284c7' : '#4b5563',
-      fontWeight: active ? '600' : '400'
-    }}
-  >
-    {icon} <span>{label}</span>
-  </div>
-);
-
-// Component con cho thẻ thống kê
-const StatCard = ({ title, value, color }) => (
-  <div style={{...styles.statCard, borderTop: `4px solid ${color}`}}>
-    <span style={styles.statTitle}>{title}</span>
-    <span style={styles.statValue}>{value}</span>
-  </div>
-);
-
-// CSS đơn giản để chạy ngay
-const styles = {
-  container: { display: 'flex', minHeight: '100vh', backgroundColor: '#f3f4f6', fontFamily: 'sans-serif' },
-  sidebar: { width: '260px', backgroundColor: 'white', borderRight: '1px solid #e5e7eb', padding: '20px' },
-  logo: { color: '#2563eb', marginBottom: '30px', fontSize: '1.5rem' },
-  navItem: { display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '8px', cursor: 'pointer', marginBottom: '4px', transition: '0.2s' },
-  main: { flex: 1, padding: '40px' },
-  header: { marginBottom: '30px' },
-  statGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' },
-  statCard: { backgroundColor: 'white', padding: '20px', borderRadius: '12px', display: 'flex', flexDirection: 'column', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' },
-  statTitle: { color: '#6b7280', fontSize: '0.875rem', marginBottom: '8px' },
-  statValue: { fontSize: '1.5rem', fontWeight: 'bold' },
-  contentArea: { marginTop: '20px' },
-  card: { backgroundColor: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }
-};
-
-export default Dashboard;
+</body>
+</html>
