@@ -3,106 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giviso - Hệ sinh thái Giáo viên Công nghiệp</title>
+    <title>Giviso - Quản lý Lớp Chủ nhiệm 10A7</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .mindmap-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-        .mindmap-cell {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .mindmap-cell:hover { background-color: #f1f5f9; border-color: #3b82f6; }
-        .center-cell { background-color: #3b82f6; color: white; font-weight: bold; border: none; }
-    </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-slate-50 text-slate-900">
 
-    <nav class="bg-white shadow-md p-4 sticky top-0 z-50">
+    <header class="bg-blue-700 text-white p-4 shadow-lg">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-blue-600">GIVISO <span class="text-sm font-normal text-gray-500">v2.0</span></h1>
-            <div class="space-x-4">
-                <button class="hover:text-blue-500">Lớp 10A7</button>
-                <button class="hover:text-blue-500">Thư viện AR</button>
-                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Tạo Quiz AI</button>
+            <div>
+                <h1 class="text-xl font-bold">GIVISO CHỦ NHIỆM</h1>
+                <p class="text-xs opacity-80">Lớp 10A7 | Sĩ số: 47 | GVCN: Thầy [Tên bạn]</p>
+            </div>
+            <div class="flex space-x-3">
+                <button class="bg-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-500"><i class="fas fa-file-export mr-1"></i> Xuất báo cáo</button>
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-700 font-bold">10A7</div>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <main class="container mx-auto mt-8 p-4">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-semibold"><i class="fas fa-users-cog mr-2"></i>Chủ nhiệm 10A7</h2>
-                    <span class="text-green-500 text-sm font-medium">47 Học sinh</span>
-                </div>
-                <div class="space-y-3">
-                    <div class="p-3 bg-blue-50 rounded-lg flex justify-between items-center">
-                        <span>Trực nhật hôm nay: <b>Tổ 3</b></span>
-                        <i class="fas fa-broom text-blue-500"></i>
-                    </div>
-                    <div class="p-3 bg-yellow-50 rounded-lg flex justify-between items-center">
-                        <span>Quỹ lớp: <b>1.250.000đ</b></span>
-                        <i class="fas fa-wallet text-yellow-600"></i>
-                    </div>
-                    <button class="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-400 hover:text-blue-500 transition">
-                        + Nhập nhận xét hàng tuần
-                    </button>
-                </div>
-            </section>
-
-            <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h2 class="text-xl font-semibold mb-4"><i class="fas fa-brain mr-2 text-purple-500"></i>Mind Map 9x9</h2>
-                <div class="mindmap-grid">
-                    <div class="mindmap-cell">Học tập</div>
-                    <div class="mindmap-cell">Sức khỏe</div>
-                    <div class="mindmap-cell">Sáng tạo</div>
-                    <div class="mindmap-cell">Kỹ năng</div>
-                    <div class="mindmap-cell center-cell">Mục tiêu</div>
-                    <div class="mindmap-cell">Kỷ luật</div>
-                    <div class="mindmap-cell">Gia đình</div>
-                    <div class="mindmap-cell">Tương lai</div>
-                    <div class="mindmap-cell">Dự án</div>
-                </div>
-                <p class="text-xs text-gray-400 mt-4 italic text-center text-wrap">* Nhấn vào ô để mở rộng lưới 9x9 chi tiết.</p>
-            </section>
-
-            <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h2 class="text-xl font-semibold mb-4"><i class="fas fa-cube mr-2 text-orange-500"></i>Kho AR Công nghệ</h2>
-                <div class="space-y-4">
-                    <div class="relative group cursor-pointer overflow-hidden rounded-lg">
-                        <img src="https://images.unsplash.com/photo-1517420704952-d9f39e95b43e?auto=format&fit=crop&w=400" alt="Motor" class="w-full h-32 object-cover group-hover:scale-110 transition duration-300">
-                        <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                            <span class="text-white font-bold"><i class="fas fa-expand mr-2"></i>Xem AR Động cơ</span>
-                        </div>
-                        <div class="p-2 text-sm font-medium">Động cơ 4 kỳ (Mô hình nổ)</div>
-                    </div>
-                    <div class="p-3 border border-gray-100 rounded-lg hover:shadow-md transition">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-medium">Bản vẽ Hình chiếu 10</span>
-                            <span class="bg-gray-100 text-xs px-2 py-1 rounded">2D/3D</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
+    <main class="container mx-auto p-4 md:p-6 space-y-6">
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-500">
+                <p class="text-xs text-gray-500 uppercase font-bold">Vắng hôm nay</p>
+                <p class="text-2xl font-bold">02</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-green-500">
+                <p class="text-xs text-gray-500 uppercase font-bold">Trực nhật</p>
+                <p class="text-lg font-bold text-green-600">Tổ 2 - Tốt</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-yellow-500">
+                <p class="text-xs text-gray-500 uppercase font-bold">Quỹ lớp còn</p>
+                <p class="text-xl font-bold">1.250.000đ</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-purple-500">
+                <p class="text-xs text-gray-500 uppercase font-bold">Thi đua</p>
+                <p class="text-lg font-bold">Hạng 3/12</p>
+            </div>
         </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <section class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-gray-100 p-4 border-b flex justify-between items-center">
+                    <h2 class="font-bold text-gray-700"><i class="fas fa-check-circle mr-2 text-blue-600"></i>Theo dõi Nề nếp</h2>
+                    <input type="text" placeholder="Tìm tên HS..." class="text-sm border rounded px-2 py-1 focus:outline-none focus:ring-2 ring-blue-300">
+                </div>
+                <div class="p-0 max-h-[400px] overflow-y-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-gray-50 sticky top-0">
+                            <tr>
+                                <th class="p-3">Họ tên</th>
+                                <th class="p-3">Tổ</th>
+                                <th class="p-3">Trạng thái</th>
+                                <th class="p-3">Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            <tr>
+                                <td class="p-3 font-medium">Nguyễn Văn An</td>
+                                <td class="p-3 text-gray-500">1</td>
+                                <td class="p-3"><span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Hiện diện</span></td>
+                                <td class="p-3 text-blue-600 cursor-pointer">+ Lỗi</td>
+                            </tr>
+                            <tr class="bg-red-50">
+                                <td class="p-3 font-medium">Lê Thị Bình</td>
+                                <td class="p-3 text-gray-500">1</td>
+                                <td class="p-3"><span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs">Vắng (P)</span></td>
+                                <td class="p-3 text-gray-400">Ốm</td>
+                            </tr>
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-gray-100 p-4 border-b">
+                    <h2 class="font-bold text-gray-700"><i class="fas fa-calculator mr-2 text-yellow-600"></i>Quản lý Thu chi</h2>
+                </div>
+                <div class="p-4 space-y-4">
+                    <div class="flex space-x-2">
+                        <button class="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm font-bold"><i class="fas fa-plus-circle mr-1"></i> Thu tiền</button>
+                        <button class="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm font-bold"><i class="fas fa-minus-circle mr-1"></i> Chi tiền</button>
+                    </div>
+                    <div class="border rounded-lg">
+                        <div class="p-3 border-b bg-gray-50 font-bold text-xs uppercase text-gray-500">Lịch sử gần đây</div>
+                        <div class="p-3 space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span>Mua chổi, hốt rác mới</span>
+                                <span class="text-red-600 font-bold">-85.000đ</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span>Đóng quỹ tháng 1 (45/47)</span>
+                                <span class="text-green-600 font-bold">+2.250.000đ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 class="text-lg font-bold mb-4 text-gray-700"><i class="fas fa-calendar-alt mr-2 text-purple-600"></i>Lịch trực nhật tuần này</h2>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+                <div class="border p-2 rounded text-center">
+                    <p class="text-xs font-bold text-gray-400">T2</p>
+                    <p class="font-bold">Tổ 1</p>
+                </div>
+                <div class="border p-2 rounded text-center bg-blue-50 border-blue-200">
+                    <p class="text-xs font-bold text-blue-400">T3 (Nay)</p>
+                    <p class="font-bold text-blue-700">Tổ 2</p>
+                </div>
+                <div class="border p-2 rounded text-center">
+                    <p class="text-xs font-bold text-gray-400">T4</p>
+                    <p class="font-bold">Tổ 3</p>
+                </div>
+                <div class="border p-2 rounded text-center">
+                    <p class="text-xs font-bold text-gray-400">T5</p>
+                    <p class="font-bold">Tổ 4</p>
+                </div>
+                <div class="border p-2 rounded text-center">
+                    <p class="text-xs font-bold text-gray-400">T6</p>
+                    <p class="font-bold">Tổ 5</p>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <div class="fixed bottom-6 right-6">
-        <button class="bg-blue-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition duration-300">
-            <i class="fas fa-plus text-xl"></i>
+        <button class="bg-blue-700 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition active:scale-95">
+            <i class="fas fa-bolt text-xl"></i>
         </button>
     </div>
 
