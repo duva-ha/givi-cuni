@@ -1,56 +1,124 @@
-// --- LOGIC CẬP NHẬT DANH SÁCH & CỘNG ĐIỂM ---
-const AdminApp = () => {
-    const [students, setStudents] = React.useState([]);
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10A7 // COMMAND CENTER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-[#020617] text-white">
+    <div id="root"></div>
 
-    // 1. Tự động tải danh sách học sinh từ Firebase khi mở trang
-    React.useEffect(() => {
-        const unsubscribe = db.collection("students").orderBy("group").onSnapshot(snapshot => {
-            setStudents(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        });
-        return () => unsubscribe();
-    }, []);
+    <script type="text/babel">
+        // 1. Cấu hình Firebase (Bạn hãy điền thông tin thật của dự án bạn vào đây)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQmerSSs0qhO01xNnFWpquZYseDThWxP0",
+            authDomain: "lichtruc-e3f82.firebaseapp.com",
+            projectId: "lichtruc-e3f82",
+            storageBucket: "lichtruc-e3f82.firebasestorage.app",
+            messagingSenderId: "476557236437",
+            appId: "1:476557236437:web:dfb1cb5848642daecdaa5c"
+        };
 
-    // 2. Hàm cộng điểm XP cho học sinh
-    const addXP = async (studentId, points, actionName) => {
-        const studentRef = db.collection("students").doc(studentId);
-        
-        try {
-            await db.runTransaction(async (transaction) => {
-                const doc = await transaction.get(studentRef);
-                const currentXp = doc.data().totalXp || 0;
-                const newXp = currentXp + points;
-                const newLevel = Math.floor(newXp / 500) + 1; // 500 XP lên 1 Level
-
-                transaction.update(studentRef, {
-                    totalXp: newXp,
-                    level: newLevel
-                });
-
-                // Lưu lịch sử để học sinh xem lại
-                db.collection("xp_logs").add({
-                    studentId,
-                    action: actionName,
-                    points: points,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            });
-            alert(`Đã cộng ${points} XP cho ${doc.data().name}`);
-        } catch (e) {
-            console.error("Lỗi cộng điểm: ", e);
+        // Khởi tạo Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
-    };
+        const db = firebase.firestore();
 
-    return (
-        <div className="p-6">
-            {students.map(s => (
-                <div key={s.id} className="flex justify-between p-4 mb-2 bg-slate-800 rounded-lg">
-                    <span>{s.name} (Tổ {s.group}) - Lv.{s.level}</span>
-                    <div className="flex gap-2">
-                        <button onClick={() => addXP(s.id, 10, "Phát biểu")} className="bg-blue-600 px-3 rounded">+10 XP</button>
-                        <button onClick={() => addXP(s.id, 30, "Trực nhật")} className="bg-green-600 px-3 rounded">+30 XP</button>
+        // 2. Logic cập nhật danh sách & cộng điểm
+        const AdminApp = () => {
+            const [students, setStudents] = React.useState([]);
+            const [loading, setLoading] = React.useState(true);
+
+            // Tự động tải danh sách học sinh
+            React.useEffect(() => {
+                const unsubscribe = db.collection("students").orderBy("group").onSnapshot(snapshot => {
+                    setStudents(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+                    setLoading(false);
+                });
+                return () => unsubscribe();
+            }, []);
+
+            // Hàm cộng điểm XP
+            const addXP = async (studentId, points, actionName) => {
+                const studentRef = db.collection("students").doc(studentId);
+                
+                try {
+                    await db.runTransaction(async (transaction) => {
+                        const doc = await transaction.get(studentRef);
+                        if (!doc.exists) throw "Học sinh không tồn tại!";
+
+                        const currentXp = doc.data().totalXp || 0;
+                        const newXp = currentXp + points;
+                        const newLevel = Math.floor(newXp / 500) + 1;
+
+                        transaction.update(studentRef, {
+                            totalXp: newXp,
+                            level: newLevel
+                        });
+
+                        db.collection("xp_logs").add({
+                            studentId,
+                            studentName: doc.data().name,
+                            action: actionName,
+                            points: points,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        alert(`Đã cộng ${points} XP cho ${doc.data().name}`);
+                    });
+                } catch (e) {
+                    console.error("Lỗi cộng điểm: ", e);
+                    alert("Lỗi: " + e);
+                }
+            };
+
+            if (loading) return <div class="p-10 text-center">Đang tải dữ liệu lớp 10A7...</div>;
+
+            return (
+                <div className="max-w-4xl mx-auto p-6">
+                    <h1 className="text-3xl font-bold mb-8 text-cyan-400 border-b border-cyan-900 pb-4">
+                        10A7 // BẢNG ĐIỀU KHIỂN GIÁO VIÊN
+                    </h1>
+                    
+                    <div className="space-y-4">
+                        {students.map(s => (
+                            <div key={s.id} className="flex justify-between items-center p-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-cyan-500/50 transition-all">
+                                <div>
+                                    <div className="text-xl font-bold uppercase">{s.name}</div>
+                                    <div className="text-sm text-slate-400">Tổ {s.group} | Level {s.level || 1} | {s.totalXp || 0} XP</div>
+                                </div>
+                                <div className="flex gap-3">
+                                    <button 
+                                        onClick={() => addXP(s.id, 10, "Phát biểu")} 
+                                        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-bold text-sm transition-colors"
+                                    >
+                                        +10 XP (Phát biểu)
+                                    </button>
+                                    <button 
+                                        onClick={() => addXP(s.id, 30, "Trực nhật")} 
+                                        className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-bold text-sm transition-colors"
+                                    >
+                                        +30 XP (Trực nhật)
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
+                    {students.length === 0 && <div class="text-slate-500">Chưa có dữ liệu học sinh trong Firebase.</div>}
                 </div>
-            ))}
-        </div>
-    );
-};
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<AdminApp />);
+    </script>
+</body>
+</html>
