@@ -3,172 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giviso - Hệ sinh thái Quản trị Chủ nhiệm</title>
+    <title>10A7 Admin Hub - XP Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .sidebar-item { transition: all 0.2s; cursor: pointer; border-left: 4px solid transparent; }
-        .sidebar-item.active { border-left-color: #1d4ed8; background-color: #eff6ff; color: #1d4ed8; font-weight: 600; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Serif+SC:wght@900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f1f5f9; }
+        .luxury-panel { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(212, 175, 55, 0.3); border-left: 4px solid #d4af37; }
+        .gold-text { background: linear-gradient(180deg, #fde68a 0%, #d4af37 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .chinese-title { font-family: 'Noto Serif SC', serif; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-50 flex h-screen overflow-hidden">
+<body>
+    <div id="root"></div>
 
-    <aside class="w-72 bg-white h-full shadow-2xl flex flex-col z-20">
-        <div class="p-8 border-b">
-            <h1 class="text-3xl font-black text-blue-700 tracking-tighter">GIVISO</h1>
-            <p class="text-[10px] text-gray-400 italic mt-2 leading-snug uppercase tracking-widest font-bold">"Steady, quiet, plodding wins the race"</p>
-        </div>
-        <nav class="mt-6 flex-1 px-2 space-y-1">
-            <div onclick="showTab('tab-ke-hoach', this)" class="sidebar-item active flex items-center px-6 py-4 rounded-r-lg hover:bg-gray-50">
-                <i class="fas fa-calendar-alt w-8 text-lg"></i> 1. Lập kế hoạch
-            </div>
-            <div onclick="showTab('tab-du-lieu', this)" class="sidebar-item flex items-center px-6 py-4 rounded-r-lg text-gray-500 hover:bg-gray-50">
-                <i class="fas fa-database w-8 text-lg"></i> 2. Quản trị dữ liệu
-            </div>
-            <div onclick="showTab('tab-theo-doi', this)" class="sidebar-item flex items-center px-6 py-4 rounded-r-lg text-gray-500 hover:bg-gray-50">
-                <i class="fas fa-chart-line w-8 text-lg"></i> 3. Theo dõi phát triển
-            </div>
-            <div onclick="showTab('tab-ket-noi', this)" class="sidebar-item flex items-center px-6 py-4 rounded-r-lg text-gray-500 hover:bg-gray-50">
-                <i class="fas fa-hands-helping w-8 text-lg"></i> 4. Kết nối & Phối hợp
-            </div>
-            <div onclick="showTab('tab-tong-ket', this)" class="sidebar-item flex items-center px-6 py-4 rounded-r-lg text-gray-500 hover:bg-gray-50">
-                <i class="fas fa-file-contract w-8 text-lg"></i> 5. Tổng kết đánh giá
-            </div>
-        </nav>
-        <div class="p-6 bg-gray-50 text-[10px] text-gray-400 border-t">
-            Lớp 10A7 | Sĩ số: 47 HS <br> Năm học: 2025 - 2026
-        </div>
-    </aside>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-    <div class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white/80 glass-card p-5 shadow-sm flex justify-between items-center px-10 sticky top-0 z-10">
-            <div class="flex items-center space-x-3">
-                <div class="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold shadow-lg shadow-blue-200">10A7</div>
-                <h2 class="font-bold text-slate-700 tracking-tight">Hệ thống Trợ lý Chủ nhiệm Số</h2>
-            </div>
-            <div class="flex items-center space-x-4 border-l pl-6">
-                <div class="text-right">
-                    <p class="text-xs font-black text-slate-800 uppercase">Thầy giáo chủ nhiệm</p>
-                    <p class="text-[10px] text-green-500 font-bold"><i class="fas fa-circle text-[8px] mr-1"></i> Đang trực tuyến</p>
-                </div>
-            </div>
-        </header>
+        // --- CẤU HÌNH FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQmerSSs0qhO01xNnFWpquZYseDThWxP0",
+            authDomain: "lichtruc-e3f82.firebaseapp.com",
+            projectId: "lichtruc-e3f82",
+            storageBucket: "lichtruc-e3f82.firebasestorage.app",
+            messagingSenderId: "476557236437",
+            appId: "1:476557236437:web:dfb1cb5848642daecdaa5c"
+        };
 
-        <main class="p-10 overflow-y-auto flex-1 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
-            
-            <div id="tab-ke-hoach" class="tab-content active">
-                <h3 class="text-slate-400 font-black text-[11px] uppercase tracking-[0.2em] mb-8">01. Hệ thống lập kế hoạch</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-2xl border-2 border-transparent hover:border-blue-500 shadow-sm transition-all cursor-pointer group">
-                        <i class="fas fa-map-marked-alt text-3xl text-blue-500 mb-4 group-hover:scale-110 transition"></i>
-                        <h4 class="font-bold text-slate-800">KH Năm học</h4>
-                        <p class="text-xs text-gray-400 mt-2">Mục tiêu chiến lược và các mốc thi đua trọng điểm.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl border-2 border-transparent hover:border-green-500 shadow-sm transition-all cursor-pointer group">
-                        <i class="fas fa-calendar-check text-3xl text-green-500 mb-4 group-hover:scale-110 transition"></i>
-                        <h4 class="font-bold text-slate-800">KH Hoạt động Tháng</h4>
-                        <p class="text-xs text-gray-400 mt-2">Chi tiết sinh hoạt lớp theo chủ điểm từng tháng.</p>
-                    </div>
-                </div>
-            </div>
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-            <div id="tab-du-lieu" class="tab-content">
-                <h3 class="text-slate-400 font-black text-[11px] uppercase tracking-[0.2em] mb-8">02. Quản trị dữ liệu lớp</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-white p-6 rounded-2xl border text-center hover:shadow-xl hover:-translate-y-1 transition cursor-pointer">
-                        <i class="fas fa-id-card text-blue-400 block mb-3 text-2xl"></i>
-                        <span class="text-xs font-black text-slate-700">SƠ YẾU LÝ LỊCH</span>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl border text-center hover:shadow-xl hover:-translate-y-1 transition cursor-pointer">
-                        <i class="fas fa-th text-orange-400 block mb-3 text-2xl"></i>
-                        <span class="text-xs font-black text-slate-700">SƠ ĐỒ LỚP</span>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl border text-center hover:shadow-xl hover:-translate-y-1 transition cursor-pointer">
-                        <i class="fas fa-users text-green-400 block mb-3 text-2xl"></i>
-                        <span class="text-xs font-black text-slate-700">CHIA TỔ & BCS</span>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl border text-center hover:shadow-xl hover:-translate-y-1 transition cursor-pointer">
-                        <i class="fas fa-file-invoice text-purple-400 block mb-3 text-2xl"></i>
-                        <span class="text-xs font-black text-slate-700">TRÍCH NGANG</span>
-                    </div>
-                </div>
-            </div>
+        const AdminApp = () => {
+            const [students, setStudents] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [searchTerm, setSearchTerm] = useState("");
 
-            <div id="tab-theo-doi" class="tab-content">
-                <h3 class="text-slate-400 font-black text-[11px] uppercase tracking-[0.2em] mb-8">03. Theo dõi phát triển hàng tuần</h3>
-                <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-50 border-b">
-                            <tr>
-                                <th class="p-5 text-slate-500 font-black uppercase">Học sinh</th>
-                                <th class="p-5 text-slate-500 font-black uppercase text-center">Chuyên cần</th>
-                                <th class="p-5 text-slate-500 font-black uppercase text-center">Nề nếp</th>
-                                <th class="p-5 text-slate-500 font-black uppercase">Ghi chú cá biệt</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="p-5 font-bold text-slate-700 underline decoration-blue-200">Nguyễn Văn An (Tổ 1)</td>
-                                <td class="p-5 text-center text-green-600 font-black">100%</td>
-                                <td class="p-5 text-center"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold">TỐT</span></td>
-                                <td class="p-5 text-slate-400 italic">Hăng hái phát biểu giờ Công nghệ.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            // 1. Đồng bộ danh sách 47 học sinh real-time
+            useEffect(() => {
+                const unsubscribe = db.collection("students").orderBy("group").onSnapshot(s => {
+                    setStudents(s.docs.map(d => ({id: d.id, ...d.data()})));
+                    setLoading(false);
+                });
+                return () => unsubscribe();
+            }, []);
 
-            <div id="tab-ket-noi" class="tab-content text-center py-24">
-                <div class="max-w-md mx-auto">
-                    <i class="fas fa-comments text-6xl text-slate-200 mb-6"></i>
-                    <h4 class="text-slate-400 font-bold italic">Module Kết nối PHHS và GVBM đang được đồng bộ dữ liệu...</h4>
-                </div>
-            </div>
+            // 2. Logic cộng/trừ XP thông minh
+            const handleXP = async (studentId, points, reason) => {
+                const studentRef = db.collection("students").doc(studentId);
+                await db.runTransaction(async (transaction) => {
+                    const doc = await transaction.get(studentRef);
+                    const newXp = (doc.data().totalXp || 0) + points;
+                    const newLevel = Math.floor(newXp / 500) + 1; // Level Up
 
-            <div id="tab-tong-ket" class="tab-content">
-                <h3 class="text-slate-400 font-black text-[11px] uppercase tracking-[0.2em] mb-8">05. Tổng kết & Xuất hồ sơ</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-white p-10 rounded-[2.5rem] border shadow-sm hover:shadow-2xl transition-all border-t-8 border-t-blue-600">
-                        <h4 class="text-2xl font-black text-slate-800 mb-4">Báo cáo tổng hợp</h4>
-                        <p class="text-sm text-slate-500 mb-8 leading-relaxed">Xuất thống kê số liệu chuyên cần, nề nếp và học tập tự động cho 47 học sinh.</p>
-                        <button onclick="exportDoc('BaoCao')" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl hover:bg-blue-700 shadow-xl shadow-blue-100 flex items-center justify-center tracking-widest uppercase text-xs">
-                            <i class="fas fa-file-export mr-2"></i> Xuất Báo Cáo Số Liệu
-                        </button>
+                    transaction.update(studentRef, {
+                        totalXp: newXp,
+                        level: newLevel,
+                        lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    // Ghi log lịch sử công khai
+                    db.collection("xp_logs").add({
+                        studentId,
+                        studentName: doc.data().name,
+                        action: reason,
+                        points: points,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+            };
+
+            const filteredStudents = students.filter(s => 
+                s.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            return (
+                <div className="max-w-6xl mx-auto p-6">
+                    <header className="flex justify-between items-center mb-10 border-b border-white/10 pb-6">
+                        <div>
+                            <h1 className="chinese-title text-4xl gold-text">10A7 // COMMAND CENTER</h1>
+                            <p className="text-[10px] uppercase tracking-[0.3em] opacity-50">Quyền truy cập: Giáo viên chủ nhiệm</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-xs font-bold text-cyan-400">STATUS: ENCRYPTED</p>
+                            <p className="text-[10px] opacity-40 uppercase">{new Date().toLocaleDateString('vi-VN')}</p>
+                        </div>
+                    </header>
+
+                    {/* Bộ lọc tìm kiếm học sinh */}
+                    <div className="mb-8">
+                        <input 
+                            type="text" 
+                            placeholder="TÌM TÊN HỌC SINH..." 
+                            className="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-[#d4af37] transition-all"
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
                     </div>
-                    <div class="bg-white p-10 rounded-[2.5rem] border shadow-sm hover:shadow-2xl transition-all border-t-8 border-t-orange-500">
-                        <h4 class="text-2xl font-black text-slate-800 mb-4">Sổ chủ nhiệm</h4>
-                        <p class="text-sm text-slate-500 mb-8 leading-relaxed">Đóng gói hồ sơ lớp, sơ đồ, kế hoạch và nhật ký chủ nhiệm thành file mẫu chuẩn.</p>
-                        <button onclick="exportDoc('SoCN')" class="w-full bg-orange-500 text-white font-black py-4 rounded-2xl hover:bg-orange-600 shadow-xl shadow-orange-100 flex items-center justify-center tracking-widest uppercase text-xs">
-                            <i class="fas fa-book mr-2"></i> Xuất Sổ Chủ Nhiệm (PDF)
-                        </button>
+
+                    {/* Danh sách quản lý */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {filteredStudents.map(s => (
+                            <div key={s.id} className="luxury-panel p-5 flex justify-between items-center animate-fade-up">
+                                <div>
+                                    <h3 className="text-lg font-black uppercase tracking-tight">{s.name}</h3>
+                                    <p className="text-[10px] opacity-50 uppercase font-bold">
+                                        Tổ {s.group} | Level {s.level || 1} | {s.totalXp || 0} XP
+                                    </p>
+                                </div>
+                                
+                                <div className="flex gap-2">
+                                    <button 
+                                        onClick={() => handleXP(s.id, 10, 'Phát biểu')}
+                                        className="w-10 h-10 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-600/30 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"
+                                        title="Phát biểu +10XP"
+                                    >
+                                        <i className="fa-solid fa-microphone-lines"></i>
+                                    </button>
+                                    <button 
+                                        onClick={() => handleXP(s.id, 30, 'Trực nhật tốt')}
+                                        className="w-10 h-10 rounded-lg bg-green-600/20 text-green-400 border border-green-600/30 flex items-center justify-center hover:bg-green-600 hover:text-white transition-all"
+                                        title="Trực nhật +30XP"
+                                    >
+                                        <i className="fa-solid fa-broom"></i>
+                                    </button>
+                                    <button 
+                                        onClick={() => handleXP(s.id, -20, 'Vi phạm nội quy')}
+                                        className="w-10 h-10 rounded-lg bg-red-600/20 text-red-400 border border-red-500/30 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all"
+                                        title="Vi phạm -20XP"
+                                    >
+                                        <i className="fa-solid fa-triangle-exclamation"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Nhật ký hành động nhanh */}
+                    <div className="mt-12 opacity-50 italic text-[10px] text-center uppercase tracking-widest">
+                        Mọi thay đổi sẽ được đồng bộ trực tiếp lên hệ thống học sinh
                     </div>
                 </div>
-            </div>
+            );
+        };
 
-        </main>
-    </div>
-
-    <script>
-        function showTab(tabId, element) {
-            // Ẩn tất cả tab
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            // Hiện tab đích
-            document.getElementById(tabId).classList.add('active');
-            // Cập nhật sidebar
-            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-            element.classList.add('active');
-        }
-
-        function exportDoc(type) {
-            const name = type === 'BaoCao' ? "BÁO CÁO TỔNG HỢP 10A7" : "SỔ CHỦ NHIỆM 10A7";
-            alert(`Hệ thống GIVISO đang khởi tạo tệp tin:\n[ ${name} ]\nVui lòng đợi trong giây lát...`);
-        }
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<AdminApp />);
     </script>
 </body>
 </html>
