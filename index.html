@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>10A7 - Hero Arena v2.0</title>
+    <title>10A7 Treasury Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -13,13 +13,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .hero-gradient { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .touch-btn { height: 52px; display: flex; align-items: center; justify-content: center; font-weight: 800; text-transform: uppercase; font-size: 11px; border-radius: 18px; transition: 0.2s; }
-        .touch-btn:active { transform: scale(0.92); opacity: 0.8; }
-        /* Hiệu ứng focus cho input */
-        .input-focus:focus-within { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
+        .hero-gradient { background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .week-card { min-width: 70px; height: 90px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+        .active-week { background: #2563eb; border-color: #60a5fa; box-shadow: 0 0 20px rgba(37, 99, 235, 0.4); }
+        .hide-scroll::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
@@ -28,182 +27,169 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Firebase Config (Thay bằng của bạn)
-        const firebaseConfig = {
-            apiKey: "AIzaSyDQmerSSs0qhO01xNnFWpquZYseDThWxP0",
-            authDomain: "lichtruc-e3f82.firebaseapp.com",
-            projectId: "lichtruc-e3f82",
-            storageBucket: "lichtruc-e3f82.firebasestorage.app",
-            messagingSenderId: "476557236437",
-            appId: "1:476557236437:web:dfb1cb5848642daecdaa5c"
-        };
-        
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
         const App = () => {
             const [role, setRole] = useState(null);
             const [pass, setPass] = useState("");
-            const [showPass, setShowPass] = useState(false); // Trạng thái con mắt
+            const [showPass, setShowPass] = useState(false);
+            const [tqMode, setTqMode] = useState(null); // 'tuần' hoặc 'đột xuất'
+            const [currentWeek, setCurrentWeek] = useState(1);
             const [students, setStudents] = useState([]);
-            const [newName, setNewName] = useState("");
-            const [newGroup, setNewGroup] = useState("");
 
-            const accessMap = {
-                "10A7GV": "GV", "10A7LT": "LT", "10A7HT": "LP_HT",
-                "10A7LD": "LP_LD", "10A7TQ": "TQ", "10A7TT": "TT"
-            };
+            const accessMap = { "10A7GV": "GV", "10A7BANK": "TQ", "10A7LT": "LT" };
 
+            // Giả lập 35 tuần - Dữ liệu thật sẽ lưu trong Firebase dưới dạng {week1: true, week2: false...}
             useEffect(() => {
-                const unsub = db.collection("students").orderBy("group").onSnapshot(s => 
-                    setStudents(s.docs.map(d => ({id: d.id, ...d.data()}))));
-                return () => unsub();
+                // Tạm thời lấy danh sách demo 47 học sinh
+                const demoData = Array.from({length: 47}, (_, i) => ({
+                    id: i, name: `Học sinh ${i+1}`, group: (i % 6) + 1, isDebt: i % 5 === 0
+                }));
+                setStudents(demoData);
             }, []);
 
             const handleLogin = () => {
                 const cleanPass = pass.trim().toUpperCase();
-                if (accessMap[cleanPass]) {
-                    setRole(accessMap[cleanPass]);
-                } else {
-                    alert("Mã truy cập không đúng!");
-                }
+                if (accessMap[cleanPass]) setRole(accessMap[cleanPass]);
+                else alert("Sai Passcode!");
             };
 
-            const handleXP = async (id, pts) => {
-                const s = students.find(x => x.id === id);
-                if (s.isDebt && pts > 0 && role !== "GV") { alert("Hero đang nợ quỹ, không thể cộng điểm!"); return; }
-                await db.collection("students").doc(id).update({
-                    totalXp: (s.totalXp || 0) + pts,
-                    level: Math.floor(((s.totalXp || 0) + pts) / 500) + 1
-                });
-            };
-
-            // Giao diện Đăng nhập với Con mắt
+            // --- GIAO DIỆN ĐĂNG NHẬP ---
             if (!role) {
                 return (
-                    <div className="min-h-screen flex items-center justify-center p-8 bg-[#020617]">
-                        <div className="w-full space-y-8 text-center max-w-sm">
-                            <div className="w-24 h-24 hero-gradient rounded-[2.5rem] mx-auto flex items-center justify-center shadow-2xl shadow-indigo-500/40 animate-pulse">
-                                <i className="fa-solid fa-bolt-lightning text-4xl text-white"></i>
-                            </div>
-                            <div>
-                                <h1 className="text-4xl font-black tracking-tighter italic">10A7<span className="text-indigo-500">.</span>HUB</h1>
-                                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-2">Hệ thống điều hành Anh hùng</p>
-                            </div>
-
-                            <div className="space-y-4">
-                                {/* Thanh mật khẩu có con mắt */}
-                                <div className="relative glass rounded-2xl flex items-center pr-4 input-focus border border-transparent transition-all">
-                                    <input 
-                                        type={showPass ? "text" : "password"} 
-                                        placeholder="Nhập Passcode..." 
-                                        className="w-full p-5 bg-transparent outline-none text-center text-xl tracking-widest font-bold"
-                                        value={pass}
-                                        onChange={e => setPass(e.target.value)}
-                                        onKeyPress={e => e.key === 'Enter' && handleLogin()}
-                                    />
-                                    <button 
-                                        type="button"
-                                        onClick={() => setShowPass(!showPass)}
-                                        className="text-gray-500 hover:text-white transition-colors ml-2"
-                                    >
-                                        <i className={`fa-solid ${showPass ? 'fa-eye-slash' : 'fa-eye'} text-lg`}></i>
-                                    </button>
+                    <div className="min-h-screen flex items-center justify-center p-8">
+                        <div className="w-full max-w-sm space-y-8">
+                            <div className="text-center space-y-2">
+                                <div className="w-20 h-20 hero-gradient rounded-[2rem] mx-auto flex items-center justify-center shadow-xl shadow-blue-500/20">
+                                    <i className="fa-solid fa-vault text-3xl text-white"></i>
                                 </div>
-
-                                <button 
-                                    onClick={handleLogin} 
-                                    className="w-full touch-btn hero-gradient text-white shadow-lg shadow-indigo-500/30"
-                                >
-                                    Kích hoạt hệ thống
-                                </button>
+                                <h1 className="text-3xl font-black italic tracking-tighter">10A7 BANKING</h1>
                             </div>
-                            <p className="text-[10px] text-gray-600 font-bold uppercase tracking-tight">© 2026 High School Tech Teacher OS</p>
+                            <div className="relative glass rounded-3xl flex items-center pr-4 border border-white/10">
+                                <input type={showPass ? "text" : "password"} placeholder="Nhập mã vai trò..." 
+                                    className="w-full p-5 bg-transparent outline-none text-center font-bold tracking-widest text-xl"
+                                    value={pass} onChange={e => setPass(e.target.value)} />
+                                <button onClick={() => setShowPass(!showPass)} className="text-gray-500"><i className={`fa-solid ${showPass ? 'fa-eye-slash' : 'fa-eye'}`}></i></button>
+                            </div>
+                            <button onClick={handleLogin} className="w-full py-5 hero-gradient rounded-3xl font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all">Đăng nhập</button>
                         </div>
                     </div>
                 );
             }
 
-            return (
-                <div className="pb-32 max-w-lg mx-auto">
-                    {/* Header Cố định */}
-                    <header className="p-6 sticky top-0 bg-[#0f172a]/90 backdrop-blur-xl z-50 flex justify-between items-center border-b border-white/5">
-                        <div>
-                            <h2 className="text-xl font-extrabold uppercase italic tracking-tighter">Arena 10A7</h2>
-                            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Quyền: {role}</p>
+            // --- GIAO DIỆN RIÊNG CHO THỦ QUỸ ---
+            if (role === "TQ" && !tqMode) {
+                return (
+                    <div className="min-h-screen flex flex-col justify-center p-6 space-y-4">
+                        <div className="text-center mb-8">
+                            <p className="text-blue-400 font-bold text-xs uppercase tracking-[0.3em]">Hệ thống Tài chính</p>
+                            <h2 className="text-2xl font-black italic uppercase">Lựa chọn danh mục thu</h2>
                         </div>
-                        <button onClick={() => setRole(null)} className="w-10 h-10 glass rounded-full flex items-center justify-center text-red-400">
-                            <i className="fa-solid fa-power-off"></i>
+                        <button onClick={() => setTqMode('tuần')} className="glass p-8 rounded-[2.5rem] flex items-center gap-6 active:scale-95 transition-all border-l-4 border-blue-500">
+                            <i className="fa-solid fa-calendar-days text-3xl text-blue-500"></i>
+                            <div className="text-left">
+                                <h3 className="font-extrabold text-xl italic uppercase">Quỹ Tuần</h3>
+                                <p className="text-[10px] opacity-40 font-bold uppercase tracking-widest">Theo dõi 35 tuần học</p>
+                            </div>
                         </button>
+                        <button onClick={() => setTqMode('đột xuất')} className="glass p-8 rounded-[2.5rem] flex items-center gap-6 active:scale-95 transition-all border-l-4 border-orange-500">
+                            <i className="fa-solid fa-fire-bolt text-3xl text-orange-500"></i>
+                            <div className="text-left">
+                                <h3 className="font-extrabold text-xl italic uppercase">Quỹ Đột Xuất</h3>
+                                <p className="text-[10px] opacity-40 font-bold uppercase tracking-widest">Sự kiện, áo lớp, dã ngoại</p>
+                            </div>
+                        </button>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="pb-32">
+                    <header className="p-6 sticky top-0 bg-[#020617]/90 backdrop-blur-xl z-50 flex justify-between items-center border-b border-white/5">
+                        <button onClick={() => setTqMode(null)} className="text-gray-500 text-xl"><i className="fa-solid fa-chevron-left"></i></button>
+                        <div className="text-center">
+                            <h2 className="text-sm font-black uppercase italic tracking-tighter">{tqMode === 'tuần' ? 'QUỸ TUẦN 10A7' : 'KHOẢN THU ĐỘT XUẤT'}</h2>
+                            <p className="text-[8px] font-bold text-blue-500 uppercase tracking-widest">{role} ACCESS</p>
+                        </div>
+                        <button onClick={() => setRole(null)} className="text-red-500/50"><i className="fa-solid fa-power-off"></i></button>
                     </header>
 
-                    <main className="px-4 mt-6 space-y-6">
-                        {/* Form thêm Hero (Chỉ dành cho MASTER/GV) */}
-                        {role === "GV" && (
-                            <div className="glass p-6 rounded-[2.5rem] border-dashed border-2 border-indigo-500/20">
-                                <p className="text-[10px] font-black text-gray-500 uppercase mb-4 tracking-widest">Chiêu mộ Hero mới</p>
-                                <div className="flex gap-2">
-                                    <input placeholder="Họ và tên..." className="flex-1 p-4 glass rounded-xl text-sm font-bold" value={newName} onChange={e => setNewName(e.target.value)} />
-                                    <select className="p-4 glass rounded-xl text-sm w-20 font-bold" value={newGroup} onChange={e => setNewGroup(e.target.value)}>
-                                        <option value="">Tổ</option>
-                                        {[1,2,3,4,5,6].map(g => <option key={g} value={g}>{g}</option>)}
-                                    </select>
-                                </div>
-                                <button onClick={async () => {
-                                    if(!newName || !newGroup) return;
-                                    await db.collection("students").add({name: newName.toUpperCase(), group: parseInt(newGroup), totalXp: 0, level: 1, isDebt: false});
-                                    setNewName(""); setNewGroup("");
-                                }} className="w-full touch-btn hero-gradient mt-4">Xác nhận gia nhập +</button>
+                    <main className="p-4 space-y-6">
+                        {/* 1. THANH TRƯỢT 35 TUẦN */}
+                        {tqMode === 'tuần' && (
+                            <div className="flex overflow-x-auto gap-3 py-2 hide-scroll px-2">
+                                {[...Array(35)].map((_, i) => (
+                                    <div key={i} onClick={() => setCurrentWeek(i+1)}
+                                        className={`week-card flex-shrink-0 ${currentWeek === i+1 ? 'active-week' : 'glass opacity-40'}`}>
+                                        <span className="text-[8px] font-black uppercase">T.</span>
+                                        <span className="text-xl font-black">{i+1}</span>
+                                    </div>
+                                ))}
                             </div>
                         )}
 
-                        {/* Danh sách Hero Cards */}
-                        <div className="space-y-4">
-                            <p className="text-[10px] font-black text-gray-500 uppercase ml-2 tracking-widest">Đội hình lớp ({students.length})</p>
-                            {students.map(s => (
-                                <div key={s.id} className="glass p-5 rounded-[2.5rem] transition-all active:bg-white/10">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-14 h-14 rounded-2xl hero-gradient flex items-center justify-center font-black text-white text-xl shadow-lg shadow-indigo-500/20">
-                                                {s.group}
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-2">
-                                                    <h3 className="font-extrabold text-base uppercase leading-none tracking-tight">{s.name}</h3>
-                                                    {s.isDebt && <i className="fa-solid fa-sack-xmark text-red-500 text-xs animate-bounce"></i>}
-                                                </div>
-                                                <p className="text-[10px] font-bold text-gray-500 mt-2 uppercase tracking-widest">Level {s.level} • {s.totalXp} XP</p>
-                                            </div>
+                        {/* 2. FORM QUỸ ĐỘT XUẤT */}
+                        {tqMode === 'đột xuất' && (
+                            <div className="glass p-6 rounded-[2rem] border border-orange-500/20 bg-orange-500/5">
+                                <div className="space-y-4 font-bold uppercase text-[10px] text-orange-400">
+                                    <div className="flex justify-between items-end gap-4">
+                                        <div className="flex-1">
+                                            <p className="mb-2 tracking-widest">Nội dung thu</p>
+                                            <input className="w-full bg-white/5 p-4 rounded-2xl border border-white/10 outline-none text-white text-xs uppercase" placeholder="VD: TIỀN ÁO LỚP" />
                                         </div>
-                                        {role === "GV" && (
-                                            <button onClick={() => window.confirm(`Xóa ${s.name}?`) && db.collection("students").doc(s.id).delete()} className="text-white/20 hover:text-red-500">
-                                                <i className="fa-solid fa-circle-xmark text-xl"></i>
-                                            </button>
-                                        )}
+                                        <div className="w-24 text-center">
+                                            <p className="mb-2 tracking-widest">Lần đóng</p>
+                                            <input type="number" className="w-full bg-white/5 p-4 rounded-2xl border border-white/10 text-center text-white" placeholder="1" />
+                                        </div>
                                     </div>
+                                    <div>
+                                        <p className="mb-2 tracking-widest tracking-widest">Đơn giá / Bạn</p>
+                                        <input className="w-full bg-white/5 p-4 rounded-2xl border border-white/10 text-white font-black text-xl" placeholder="50.000 Đ" />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
-                                    {/* Bảng điều khiển cảm ứng */}
-                                    <div className="grid grid-cols-4 gap-2">
-                                        {(role === "GV" || role === "LT" || role === "TT") && (
-                                            <button onClick={() => handleXP(s.id, 10)} className="touch-btn bg-blue-500/10 text-blue-400 border border-blue-500/20">HT</button>
-                                        )}
-                                        {(role === "GV" || role === "LP_LD" || role === "TT") && (
-                                            <button onClick={() => handleXP(s.id, 30)} className="touch-btn bg-green-500/10 text-green-400 border border-green-500/20">LĐ</button>
-                                        )}
-                                        {(role === "GV" || role === "LP_HT") && (
-                                            <button onClick={() => handleXP(s.id, 20)} className="touch-btn bg-purple-500/10 text-purple-400 border border-purple-500/20">NN</button>
-                                        )}
-                                        {(role === "GV" || role === "TQ") && (
-                                            <button onClick={() => db.collection("students").doc(s.id).update({isDebt: !s.isDebt})} 
-                                                className={`touch-btn border ${s.isDebt ? 'bg-red-500 text-white border-red-600 shadow-lg shadow-red-500/20' : 'bg-white/5 text-gray-500 border-white/10'}`}>
-                                                <i className="fa-solid fa-dollar-sign"></i>
-                                            </button>
-                                        )}
+                        {/* 3. DANH SÁCH DÒ XEM AI ĐÃ ĐÓNG / CHƯA ĐÓNG */}
+                        <div className="space-y-3">
+                            <div className="flex justify-between px-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                <span>Tên Anh Hùng</span>
+                                <span>Trạng thái</span>
+                            </div>
+                            {students.map(s => (
+                                <div key={s.id} className="glass p-5 rounded-[2.5rem] flex justify-between items-center group active:bg-white/5 transition-all">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xs ${s.isDebt ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'}`}>
+                                            {s.group}
+                                        </div>
+                                        <div>
+                                            <h4 className="font-black text-sm uppercase tracking-tight">{s.name}</h4>
+                                            <p className="text-[9px] font-bold opacity-30 italic uppercase">Tổ trưởng duyệt XP: OK</p>
+                                        </div>
                                     </div>
+                                    {/* Nút Check Đóng Quỹ */}
+                                    <button onClick={() => {
+                                        const newArr = students.map(item => item.id === s.id ? {...item, isDebt: !item.isDebt} : item);
+                                        setStudents(newArr);
+                                    }} className={`w-14 h-14 rounded-[1.5rem] flex items-center justify-center text-xl transition-all ${s.isDebt ? 'bg-white/5 text-gray-600 border border-white/5' : 'bg-green-500 text-white shadow-lg shadow-green-500/20'}`}>
+                                        <i className={`fa-solid ${s.isDebt ? 'fa-hourglass-start text-sm' : 'fa-check'}`}></i>
+                                    </button>
                                 </div>
                             ))}
                         </div>
                     </main>
+
+                    {/* BÁO CÁO NHANH CHO THỦ QUỸ */}
+                    <footer className="fixed bottom-0 left-0 right-0 p-6 glass border-t border-white/10 rounded-t-[3rem] z-50">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <p className="text-[10px] font-black text-gray-500 uppercase">Đã thu thực tế</p>
+                                <p className="text-2xl font-black text-blue-400">1.850.000 <span className="text-[10px]">Đ</span></p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-[10px] font-black text-gray-500 uppercase mb-2 italic">Dò lỗi: 7/47 bạn chưa đóng</p>
+                                <button className="hero-gradient px-6 py-3 rounded-full font-black text-[10px] uppercase shadow-lg">Gửi Báo Cáo GV</button>
+                            </div>
+                        </div>
+                    </footer>
                 </div>
             );
         };
