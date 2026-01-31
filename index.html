@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>10A7 COMMAND CENTER // ADMIN</title>
+    <title>10A7 Control Center // North American Style</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -12,13 +12,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f5f5f7; color: #1d1d1f; }
-        .admin-card { background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.02); }
-        .input-modern { border: 1px solid #d2d2d7; border-radius: 12px; padding: 12px; outline: none; transition: border 0.3s; }
-        .input-modern:focus { border-color: #0071e3; }
-        .btn-delete { color: #ff3b30; opacity: 0.3; transition: opacity 0.3s; }
-        .btn-delete:hover { opacity: 1; }
+        .apple-card { background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
@@ -27,138 +23,115 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- CẤU HÌNH FIREBASE ---
+        // Firebase Config (Dùng lại config cũ của bạn)
         const firebaseConfig = {
             apiKey: "AIzaSyDQmerSSs0qhO01xNnFWpquZYseDThWxP0",
-            authDomain: "lichtruc-e3f82.firebaseapp.com",
             projectId: "lichtruc-e3f82",
-            storageBucket: "lichtruc-e3f82.firebasestorage.app",
-            messagingSenderId: "476557236437",
-            appId: "1:476557236437:web:dfb1cb5848642daecdaa5c"
+            // ... các thông số khác
         };
-
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        const AdminApp = () => {
+        const App = () => {
+            const [role, setRole] = useState(null);
+            const [pass, setPass] = useState("");
             const [students, setStudents] = useState([]);
-            const [newName, setNewName] = useState("");
-            const [newGroup, setNewGroup] = useState("");
 
-            // 1. Tải danh sách thời gian thực
+            const accessMap = {
+                "10A7MASTER": "GV", "10A7CAPTAIN": "LT", "10A7ACADEMY": "LP_HT",
+                "10A7WORK": "LP_LD", "10A7BANK": "TQ", "10A7GROUP": "TT"
+            };
+
             useEffect(() => {
-                const unsubscribe = db.collection("students").orderBy("group").onSnapshot(s => {
-                    setStudents(s.docs.map(d => ({id: d.id, ...d.data()})));
-                });
-                return () => unsubscribe();
+                const unsub = db.collection("students").orderBy("group").onSnapshot(s => 
+                    setStudents(s.docs.map(d => ({id: d.id, ...d.data()}))));
+                return () => unsub();
             }, []);
 
-            // 2. Thêm học sinh mới
-            const createStudent = async () => {
-                if (!newName || !newGroup) return alert("Vui lòng nhập đủ Tên và Tổ!");
-                await db.collection("students").add({
-                    name: newName.toUpperCase(),
-                    group: parseInt(newGroup),
-                    level: 1,
-                    totalXp: 0
-                });
-                setNewName(""); setNewGroup("");
-            };
-
-            // 3. Xóa học sinh
-            const deleteStudent = async (id, name) => {
-                if (window.confirm(`Thầy/Cô có chắc chắn muốn xóa học sinh ${name} khỏi danh sách không?`)) {
-                    await db.collection("students").doc(id).delete();
+            const handleXP = async (id, pts, reason) => {
+                const s = students.find(x => x.id === id);
+                // Kiểm tra điều kiện Thủ quỹ: Nếu nợ quỹ (isDebt = true) và cộng điểm thưởng (pts > 0)
+                if (s.isDebt && pts > 0 && role !== "GV") {
+                    alert("Học sinh này đang nợ quỹ. Không thể nhận điểm thưởng!");
+                    return;
                 }
-            };
-
-            // 4. Cộng/Trừ XP
-            const handleXP = async (id, points, action) => {
-                const ref = db.collection("students").doc(id);
-                await db.runTransaction(async (transaction) => {
-                    const doc = await transaction.get(ref);
-                    const newXp = (doc.data().totalXp || 0) + points;
-                    transaction.update(ref, {
-                        totalXp: newXp,
-                        level: Math.floor(newXp / 500) + 1
-                    });
-                    db.collection("xp_logs").add({
-                        studentId: id, studentName: doc.data().name,
-                        action, points, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
+                
+                await db.collection("students").doc(id).update({
+                    totalXp: (s.totalXp || 0) + pts,
+                    level: Math.floor(((s.totalXp || 0) + pts) / 500) + 1
                 });
             };
+
+            const toggleDebt = async (id, currentStatus) => {
+                await db.collection("students").doc(id).update({ isDebt: !currentStatus });
+            };
+
+            if (!role) {
+                return (
+                    <div className="h-screen flex flex-col items-center justify-center p-6 bg-[#0071e3]">
+                        <h1 className="text-white text-3xl font-extrabold mb-8">10A7 COMMAND LOGIN</h1>
+                        <input type="password" placeholder="Mã truy cập..." className="p-4 rounded-2xl w-full max-w-sm mb-4 outline-none" 
+                               value={pass} onChange={e => setPass(e.target.value)} />
+                        <button onClick={() => accessMap[pass] ? setRole(accessMap[pass]) : alert("Sai mã!")} 
+                                className="bg-black text-white px-10 py-4 rounded-2xl font-bold">XÁC NHẬN</button>
+                    </div>
+                );
+            }
 
             return (
-                <div className="max-w-2xl mx-auto p-6 pb-20">
-                    <header className="py-10">
-                        <h1 className="text-4xl font-extrabold tracking-tight">10A7 Command Center<span className="text-blue-600">.</span></h1>
-                        <p className="text-gray-400 font-medium uppercase text-[10px] tracking-widest mt-2">Hệ thống quản lý giáo viên</p>
+                <div className="max-w-4xl mx-auto p-6">
+                    <header className="flex justify-between items-end mb-10">
+                        <div>
+                            <p className="text-xs font-bold text-blue-600 uppercase">Quyền hạn: {role}</p>
+                            <h1 className="text-3xl font-extrabold tracking-tight">Hệ thống điều hành 10A7</h1>
+                        </div>
+                        <button onClick={() => setRole(null)} className="text-xs font-bold text-gray-400">ĐĂNG XUẤT</button>
                     </header>
 
-                    {/* FORM THÊM MỚI */}
-                    <section className="admin-card p-6 mb-10">
-                        <p className="text-xs font-bold text-gray-400 uppercase mb-4 tracking-wider">Chiêu mộ Hero mới</p>
-                        <div className="flex flex-col gap-3">
-                            <input 
-                                className="input-modern" 
-                                placeholder="Họ và tên học sinh..." 
-                                value={newName}
-                                onChange={e => setNewName(e.target.value)}
-                            />
-                            <div className="flex gap-3">
-                                <select 
-                                    className="input-modern flex-1"
-                                    value={newGroup}
-                                    onChange={e => setNewGroup(e.target.value)}
-                                >
-                                    <option value="">Chọn Tổ (1-6)</option>
-                                    {[1,2,3,4,5,6].map(g => <option key={g} value={g}>Tổ {g}</option>)}
-                                </select>
-                                <button 
-                                    onClick={createStudent}
-                                    className="bg-blue-600 text-white px-6 rounded-xl font-bold active:scale-95 transition-all"
-                                >
-                                    THÊM +
-                                </button>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* DANH SÁCH QUẢN LÝ */}
-                    <section className="space-y-4">
-                        <p className="text-xs font-bold text-gray-400 uppercase mb-4 tracking-wider ml-2">Danh sách Hero ({students.length})</p>
+                    <div className="space-y-4">
                         {students.map(s => (
-                            <div key={s.id} className="admin-card p-5 flex justify-between items-center group">
-                                <div className="flex items-center gap-4">
-                                    <button onClick={() => deleteStudent(s.id, s.name)} className="btn-delete">
-                                        <i className="fa-solid fa-trash-can text-sm"></i>
-                                    </button>
-                                    <div>
-                                        <p className="font-bold text-sm uppercase">{s.name}</p>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase">Tổ {s.group} • Lv.{s.level} • {s.totalXp} XP</p>
+                            <div key={s.id} className="apple-card p-5 flex justify-between items-center">
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <p className="font-bold uppercase text-sm">{s.name}</p>
+                                        {s.isDebt && <span className="text-[9px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-black">NỢ QUỸ</span>}
                                     </div>
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Tổ {s.group} • {s.totalXp} XP</p>
                                 </div>
+
                                 <div className="flex gap-2">
-                                    <button onClick={() => handleXP(s.id, 10, 'Phát biểu')} className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all">
-                                        <i className="fa-solid fa-microphone text-xs"></i>
-                                    </button>
-                                    <button onClick={() => handleXP(s.id, 30, 'Trực nhật')} className="w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center hover:bg-green-600 hover:text-white transition-all">
-                                        <i className="fa-solid fa-broom text-xs"></i>
-                                    </button>
-                                    <button onClick={() => handleXP(s.id, -20, 'Vi phạm')} className="w-10 h-10 bg-red-50 text-red-600 rounded-xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all">
-                                        <i className="fa-solid fa-minus text-xs"></i>
-                                    </button>
+                                    {/* PHÂN QUYỀN NÚT BẤM */}
+                                    { (role === "GV" || role === "LT" || role === "TT") && (
+                                        <button onClick={() => handleXP(s.id, 10, 'Chuyên cần')} className="p-2 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-bold">CHUYÊN CẦN</button>
+                                    )}
+
+                                    { (role === "GV" || role === "LP_HT") && (
+                                        <button onClick={() => handleXP(s.id, 20, 'Nề nếp')} className="p-2 bg-purple-50 text-purple-600 rounded-xl text-[10px] font-bold">NỀ NẾP</button>
+                                    )}
+
+                                    { (role === "GV" || role === "LP_LD" || role === "TT") && (
+                                        <button onClick={() => handleXP(s.id, 30, 'Trực nhật')} className="p-2 bg-green-50 text-green-600 rounded-xl text-[10px] font-bold">TRỰC NHẬT</button>
+                                    )}
+
+                                    { (role === "GV" || role === "TQ") && (
+                                        <button onClick={() => toggleDebt(s.id, s.isDebt)} className={`p-2 rounded-xl text-[10px] font-bold ${s.isDebt ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
+                                            {s.isDebt ? 'XÁC NHẬN ĐÃ ĐÓNG' : 'BÁO NỢ QUỸ'}
+                                        </button>
+                                    )}
+
+                                    { role === "GV" && (
+                                        <button onClick={() => db.collection("students").doc(s.id).delete()} className="p-2 text-red-400"><i className="fa-solid fa-trash"></i></button>
+                                    )}
                                 </div>
                             </div>
                         ))}
-                    </section>
+                    </div>
                 </div>
             );
         };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<AdminApp />);
+        root.render(<App />);
     </script>
 </body>
 </html>
