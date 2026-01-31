@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>10A7 Treasury Hub</title>
+    <title>10A7 COMMAND - FINAL FIX</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -14,11 +14,10 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; }
-        .hero-gradient { background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); }
+        .hero-gradient { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .week-card { min-width: 70px; height: 90px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
-        .active-week { background: #2563eb; border-color: #60a5fa; box-shadow: 0 0 20px rgba(37, 99, 235, 0.4); }
-        .hide-scroll::-webkit-scrollbar { display: none; }
+        .week-card { min-width: 70px; height: 90px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1); }
+        .active-week { background: #6366f1; border-color: #818cf8; box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
     </style>
 </head>
 <body>
@@ -31,165 +30,153 @@
             const [role, setRole] = useState(null);
             const [pass, setPass] = useState("");
             const [showPass, setShowPass] = useState(false);
-            const [tqMode, setTqMode] = useState(null); // 'tuần' hoặc 'đột xuất'
+            const [tqMode, setTqMode] = useState(null); 
             const [currentWeek, setCurrentWeek] = useState(1);
             const [students, setStudents] = useState([]);
 
-            const accessMap = { "10A7GV": "GV", "10A7BANK": "TQ", "10A7LT": "LT" };
+            // BẢNG MÃ CHUẨN - HÃY NHẬP ĐÚNG CÁC MÃ NÀY
+            const accessMap = { 
+                "10A7GV": "GV", 
+                "10A7BANK": "TQ", 
+                "10A7LT": "LT",
+                "10A7HT": "LP_HT",
+                "10A7LD": "LP_LD",
+                "10A7TT": "TT"
+            };
 
-            // Giả lập 35 tuần - Dữ liệu thật sẽ lưu trong Firebase dưới dạng {week1: true, week2: false...}
             useEffect(() => {
-                // Tạm thời lấy danh sách demo 47 học sinh
+                // Giả lập danh sách 47 học sinh
                 const demoData = Array.from({length: 47}, (_, i) => ({
-                    id: i, name: `Học sinh ${i+1}`, group: (i % 6) + 1, isDebt: i % 5 === 0
+                    id: i, name: `HỌC SINH ${i+1}`, group: (i % 6) + 1, isDebt: i % 7 === 0, totalXp: 1200, level: 3
                 }));
                 setStudents(demoData);
             }, []);
 
             const handleLogin = () => {
                 const cleanPass = pass.trim().toUpperCase();
-                if (accessMap[cleanPass]) setRole(accessMap[cleanPass]);
-                else alert("Sai Passcode!");
+                if (accessMap[cleanPass]) {
+                    setRole(accessMap[cleanPass]);
+                    setPass(""); // Xóa pass sau khi vô
+                } else {
+                    alert("SAI MÃ! BẠN VỪA NHẬP: " + cleanPass);
+                }
             };
 
-            // --- GIAO DIỆN ĐĂNG NHẬP ---
             if (!role) {
                 return (
                     <div className="min-h-screen flex items-center justify-center p-8">
-                        <div className="w-full max-w-sm space-y-8">
-                            <div className="text-center space-y-2">
-                                <div className="w-20 h-20 hero-gradient rounded-[2rem] mx-auto flex items-center justify-center shadow-xl shadow-blue-500/20">
-                                    <i className="fa-solid fa-vault text-3xl text-white"></i>
-                                </div>
-                                <h1 className="text-3xl font-black italic tracking-tighter">10A7 BANKING</h1>
+                        <div className="w-full max-w-sm space-y-8 text-center">
+                            <div className="w-20 h-20 hero-gradient rounded-[2rem] mx-auto flex items-center justify-center shadow-xl shadow-indigo-500/20">
+                                <i className="fa-solid fa-key text-3xl text-white"></i>
                             </div>
+                            <h1 className="text-3xl font-black italic">10A7 LOGIN</h1>
                             <div className="relative glass rounded-3xl flex items-center pr-4 border border-white/10">
-                                <input type={showPass ? "text" : "password"} placeholder="Nhập mã vai trò..." 
+                                <input type={showPass ? "text" : "password"} placeholder="NHẬP MÃ..." 
                                     className="w-full p-5 bg-transparent outline-none text-center font-bold tracking-widest text-xl"
-                                    value={pass} onChange={e => setPass(e.target.value)} />
+                                    value={pass} onChange={e => setPass(e.target.value)}
+                                    onKeyPress={e => e.key === 'Enter' && handleLogin()} />
                                 <button onClick={() => setShowPass(!showPass)} className="text-gray-500"><i className={`fa-solid ${showPass ? 'fa-eye-slash' : 'fa-eye'}`}></i></button>
                             </div>
-                            <button onClick={handleLogin} className="w-full py-5 hero-gradient rounded-3xl font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all">Đăng nhập</button>
+                            <button onClick={handleLogin} className="w-full py-5 hero-gradient rounded-3xl font-black uppercase tracking-widest active:scale-95 transition-all shadow-lg shadow-indigo-500/30">XÁC NHẬN</button>
                         </div>
                     </div>
                 );
             }
 
-            // --- GIAO DIỆN RIÊNG CHO THỦ QUỸ ---
-            if (role === "TQ" && !tqMode) {
+            // --- GIAO DIỆN RIÊNG THỦ QUỸ (TQ) ---
+            if (role === "TQ") {
+                if (!tqMode) return (
+                    <div className="min-h-screen flex flex-col justify-center p-6 space-y-6">
+                        <div className="text-center mb-4"><h2 className="text-2xl font-black italic uppercase gold-text">QUẢN LÝ TÀI CHÍNH</h2></div>
+                        <button onClick={() => setTqMode('tuần')} className="glass p-8 rounded-[2.5rem] flex items-center gap-6 active:scale-95 transition-all border-l-4 border-indigo-500 text-left">
+                            <i className="fa-solid fa-calendar-week text-3xl text-indigo-500"></i>
+                            <div><h3 className="font-extrabold text-xl uppercase italic">Quỹ Tuần</h3><p className="text-[10px] opacity-40 font-bold uppercase tracking-widest">35 Tuần học</p></div>
+                        </button>
+                        <button onClick={() => setTqMode('đột xuất')} className="glass p-8 rounded-[2.5rem] flex items-center gap-6 active:scale-95 transition-all border-l-4 border-orange-500 text-left">
+                            <i className="fa-solid fa-bolt text-3xl text-orange-500"></i>
+                            <div><h3 className="font-extrabold text-xl uppercase italic">Quỹ Đột Xuất</h3><p className="text-[10px] opacity-40 font-bold uppercase tracking-widest">Sự kiện lớp</p></div>
+                        </button>
+                    </div>
+                );
+
                 return (
-                    <div className="min-h-screen flex flex-col justify-center p-6 space-y-4">
-                        <div className="text-center mb-8">
-                            <p className="text-blue-400 font-bold text-xs uppercase tracking-[0.3em]">Hệ thống Tài chính</p>
-                            <h2 className="text-2xl font-black italic uppercase">Lựa chọn danh mục thu</h2>
-                        </div>
-                        <button onClick={() => setTqMode('tuần')} className="glass p-8 rounded-[2.5rem] flex items-center gap-6 active:scale-95 transition-all border-l-4 border-blue-500">
-                            <i className="fa-solid fa-calendar-days text-3xl text-blue-500"></i>
-                            <div className="text-left">
-                                <h3 className="font-extrabold text-xl italic uppercase">Quỹ Tuần</h3>
-                                <p className="text-[10px] opacity-40 font-bold uppercase tracking-widest">Theo dõi 35 tuần học</p>
-                            </div>
-                        </button>
-                        <button onClick={() => setTqMode('đột xuất')} className="glass p-8 rounded-[2.5rem] flex items-center gap-6 active:scale-95 transition-all border-l-4 border-orange-500">
-                            <i className="fa-solid fa-fire-bolt text-3xl text-orange-500"></i>
-                            <div className="text-left">
-                                <h3 className="font-extrabold text-xl italic uppercase">Quỹ Đột Xuất</h3>
-                                <p className="text-[10px] opacity-40 font-bold uppercase tracking-widest">Sự kiện, áo lớp, dã ngoại</p>
-                            </div>
-                        </button>
-                    </div>
-                );
-            }
-
-            return (
-                <div className="pb-32">
-                    <header className="p-6 sticky top-0 bg-[#020617]/90 backdrop-blur-xl z-50 flex justify-between items-center border-b border-white/5">
-                        <button onClick={() => setTqMode(null)} className="text-gray-500 text-xl"><i className="fa-solid fa-chevron-left"></i></button>
-                        <div className="text-center">
-                            <h2 className="text-sm font-black uppercase italic tracking-tighter">{tqMode === 'tuần' ? 'QUỸ TUẦN 10A7' : 'KHOẢN THU ĐỘT XUẤT'}</h2>
-                            <p className="text-[8px] font-bold text-blue-500 uppercase tracking-widest">{role} ACCESS</p>
-                        </div>
-                        <button onClick={() => setRole(null)} className="text-red-500/50"><i className="fa-solid fa-power-off"></i></button>
-                    </header>
-
-                    <main className="p-4 space-y-6">
-                        {/* 1. THANH TRƯỢT 35 TUẦN */}
-                        {tqMode === 'tuần' && (
-                            <div className="flex overflow-x-auto gap-3 py-2 hide-scroll px-2">
+                    <div className="pb-32 px-4 pt-6">
+                        <header className="mb-6 flex justify-between items-center">
+                            <button onClick={() => setTqMode(null)} className="text-gray-400"><i className="fa-solid fa-chevron-left mr-2"></i>QUAY LẠI</button>
+                            <h2 className="font-black text-xs uppercase tracking-widest">HỆ THỐNG THỦ QUỸ</h2>
+                            <button onClick={() => setRole(null)} className="text-red-500"><i className="fa-solid fa-power-off"></i></button>
+                        </header>
+                        
+                        {tqMode === 'tuần' ? (
+                            <div className="flex overflow-x-auto gap-3 py-4 mb-6 px-2 no-scrollbar">
                                 {[...Array(35)].map((_, i) => (
-                                    <div key={i} onClick={() => setCurrentWeek(i+1)}
-                                        className={`week-card flex-shrink-0 ${currentWeek === i+1 ? 'active-week' : 'glass opacity-40'}`}>
-                                        <span className="text-[8px] font-black uppercase">T.</span>
-                                        <span className="text-xl font-black">{i+1}</span>
+                                    <div key={i} onClick={() => setCurrentWeek(i+1)} className={`week-card flex-shrink-0 ${currentWeek === i+1 ? 'active-week' : 'glass opacity-30'}`}>
+                                        <span className="text-[8px] font-black uppercase">Tuần</span><span className="text-xl font-black">{i+1}</span>
                                     </div>
                                 ))}
                             </div>
-                        )}
-
-                        {/* 2. FORM QUỸ ĐỘT XUẤT */}
-                        {tqMode === 'đột xuất' && (
-                            <div className="glass p-6 rounded-[2rem] border border-orange-500/20 bg-orange-500/5">
-                                <div className="space-y-4 font-bold uppercase text-[10px] text-orange-400">
-                                    <div className="flex justify-between items-end gap-4">
-                                        <div className="flex-1">
-                                            <p className="mb-2 tracking-widest">Nội dung thu</p>
-                                            <input className="w-full bg-white/5 p-4 rounded-2xl border border-white/10 outline-none text-white text-xs uppercase" placeholder="VD: TIỀN ÁO LỚP" />
-                                        </div>
-                                        <div className="w-24 text-center">
-                                            <p className="mb-2 tracking-widest">Lần đóng</p>
-                                            <input type="number" className="w-full bg-white/5 p-4 rounded-2xl border border-white/10 text-center text-white" placeholder="1" />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className="mb-2 tracking-widest tracking-widest">Đơn giá / Bạn</p>
-                                        <input className="w-full bg-white/5 p-4 rounded-2xl border border-white/10 text-white font-black text-xl" placeholder="50.000 Đ" />
-                                    </div>
-                                </div>
+                        ) : (
+                            <div className="glass p-6 rounded-3xl mb-6">
+                                <p className="text-[10px] font-black text-orange-400 uppercase mb-2 tracking-widest">Nội dung thu đột xuất</p>
+                                <input className="w-full bg-white/5 p-4 rounded-xl border border-white/10 text-sm mb-4" placeholder="VD: TIỀN ÁO LỚP..." />
                             </div>
                         )}
 
-                        {/* 3. DANH SÁCH DÒ XEM AI ĐÃ ĐÓNG / CHƯA ĐÓNG */}
                         <div className="space-y-3">
-                            <div className="flex justify-between px-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">
-                                <span>Tên Anh Hùng</span>
-                                <span>Trạng thái</span>
-                            </div>
                             {students.map(s => (
-                                <div key={s.id} className="glass p-5 rounded-[2.5rem] flex justify-between items-center group active:bg-white/5 transition-all">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xs ${s.isDebt ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'}`}>
-                                            {s.group}
-                                        </div>
-                                        <div>
-                                            <h4 className="font-black text-sm uppercase tracking-tight">{s.name}</h4>
-                                            <p className="text-[9px] font-bold opacity-30 italic uppercase">Tổ trưởng duyệt XP: OK</p>
-                                        </div>
+                                <div key={s.id} className="glass p-5 rounded-[2.5rem] flex justify-between items-center border border-white/5">
+                                    <div>
+                                        <h4 className="font-black text-sm uppercase">{s.name}</h4>
+                                        <p className={`text-[9px] font-bold uppercase ${s.isDebt ? 'text-red-500' : 'text-green-500'}`}>{s.isDebt ? 'Chưa đóng' : 'Đã đóng'}</p>
                                     </div>
-                                    {/* Nút Check Đóng Quỹ */}
                                     <button onClick={() => {
-                                        const newArr = students.map(item => item.id === s.id ? {...item, isDebt: !item.isDebt} : item);
-                                        setStudents(newArr);
-                                    }} className={`w-14 h-14 rounded-[1.5rem] flex items-center justify-center text-xl transition-all ${s.isDebt ? 'bg-white/5 text-gray-600 border border-white/5' : 'bg-green-500 text-white shadow-lg shadow-green-500/20'}`}>
-                                        <i className={`fa-solid ${s.isDebt ? 'fa-hourglass-start text-sm' : 'fa-check'}`}></i>
+                                        setStudents(students.map(item => item.id === s.id ? {...item, isDebt: !item.isDebt} : item))
+                                    }} className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl transition-all ${s.isDebt ? 'bg-white/5 text-gray-600' : 'bg-green-500 text-white shadow-lg shadow-green-500/20'}`}>
+                                        <i className={`fa-solid ${s.isDebt ? 'fa-dollar-sign' : 'fa-check'}`}></i>
                                     </button>
                                 </div>
                             ))}
                         </div>
-                    </main>
+                    </div>
+                );
+            }
 
-                    {/* BÁO CÁO NHANH CHO THỦ QUỸ */}
-                    <footer className="fixed bottom-0 left-0 right-0 p-6 glass border-t border-white/10 rounded-t-[3rem] z-50">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <p className="text-[10px] font-black text-gray-500 uppercase">Đã thu thực tế</p>
-                                <p className="text-2xl font-black text-blue-400">1.850.000 <span className="text-[10px]">Đ</span></p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-[10px] font-black text-gray-500 uppercase mb-2 italic">Dò lỗi: 7/47 bạn chưa đóng</p>
-                                <button className="hero-gradient px-6 py-3 rounded-full font-black text-[10px] uppercase shadow-lg">Gửi Báo Cáo GV</button>
-                            </div>
+            // --- GIAO DIỆN CHUNG (GV, LT, LP, TT) ---
+            return (
+                <div className="max-w-lg mx-auto p-6 pb-20">
+                    <header className="flex justify-between items-center mb-10 pt-4">
+                        <div>
+                            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Quyền: {role}</p>
+                            <h1 className="text-3xl font-extrabold tracking-tighter italic">10A7 Arena.</h1>
                         </div>
-                    </footer>
+                        <button onClick={() => setRole(null)} className="w-10 h-10 glass rounded-full text-red-500 flex items-center justify-center"><i className="fa-solid fa-power-off"></i></button>
+                    </header>
+
+                    {role === "GV" && (
+                        <div className="glass p-6 rounded-[2.5rem] mb-10 border-dashed border-2 border-indigo-500/20">
+                            <input placeholder="Tên học sinh..." className="w-full p-4 glass rounded-xl mb-4 text-sm font-bold uppercase" />
+                            <button className="w-full py-4 hero-gradient rounded-xl font-bold">THÊM HỌC SINH +</button>
+                        </div>
+                    )}
+
+                    <div className="space-y-4">
+                        {students.map(s => (
+                            <div key={s.id} className="glass p-5 rounded-[2.5rem] flex justify-between items-center">
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <h4 className="font-black text-sm uppercase tracking-tight">{s.name}</h4>
+                                        {s.isDebt && <i className="fa-solid fa-lock text-red-500 text-[10px]"></i>}
+                                    </div>
+                                    <p className="text-[9px] text-gray-500 font-bold uppercase mt-1 tracking-widest">Tổ {s.group} • Lv.{s.level} • {s.totalXp} XP</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    {(role === "GV" || role === "LT" || role === "TT") && <button className="w-10 h-10 bg-blue-500/10 text-blue-400 rounded-xl text-[10px] font-black">HT</button>}
+                                    {(role === "GV" || role === "LP_LD" || role === "TT") && <button className="w-10 h-10 bg-green-500/10 text-green-400 rounded-xl text-[10px] font-black">LĐ</button>}
+                                    {role === "GV" && <button onClick={() => db.collection("students").doc(s.id).delete()} className="w-10 h-10 text-red-900/40"><i className="fa-solid fa-trash-can"></i></button>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             );
         };
