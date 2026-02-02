@@ -1,14 +1,14 @@
-// TreasuryModule.js - Nâng cấp Báo cáo: Tách biệt Quỹ đột xuất
+// TreasuryModule.js - BẢN HOÀN CHỈNH TỔNG THỂ (FIX LỖI MẤT MENU)
 const TreasuryModule = ({ students = [], specialFunds = [], expenses = [], weeklyFees = {}, db, logout }) => {
     const [mode, setMode] = React.useState(null); 
     const [currentWeek, setCurrentWeek] = React.useState(1);
+    const [expenseWeek, setExpenseWeek] = React.useState(1);
     const [selectedSpecialId, setSelectedSpecialId] = React.useState(null);
 
     const getWeekKey = (num) => `week_${num < 10 ? '0' + num : num}`;
 
-    // --- LOGIC TÍNH TOÁN MỚI ---
+    // --- 1. LOGIC TÍNH TOÁN BÁO CÁO ---
     const getReportData = () => {
-        // 1. Chỉ tính thu từ Quỹ Tuần
         const totalWeeklyIncome = students.reduce((acc, s) => {
             if (!s.funds) return acc;
             let sum = 0;
@@ -18,99 +18,218 @@ const TreasuryModule = ({ students = [], specialFunds = [], expenses = [], weekl
             return acc + sum;
         }, 0);
 
-        // 2. Tổng chi tiêu từ quỹ chung
         const totalExpense = expenses.reduce((acc, e) => acc + (e.amount || 0), 0);
 
         return {
             totalWeeklyIncome,
             totalExpense,
-            classBalance: totalWeeklyIncome - totalExpense // Tồn quỹ lớp thực tế
+            classBalance: totalWeeklyIncome - totalExpense
         };
     };
 
     const stats = getReportData();
 
-    // 1. MENU CHÍNH (Giữ nguyên)
+    // --- 2. MENU CHÍNH (PHÓNG TO CHO MOBILE) ---
     if (!mode) return (
-        <div className="min-h-screen flex flex-col justify-center p-6 space-y-4 animate-fadeIn text-white">
-            <h2 className="text-center text-2xl font-black italic mb-6 uppercase tracking-tighter">Treasury Center</h2>
-            <div className="grid grid-cols-2 gap-4">
-                <button onClick={() => setMode('weekly')} className="glass p-6 rounded-[2.5rem] flex flex-col items-center gap-4 border-b-4 border-blue-500 active:scale-95 text-white">
-                    <i className="fa-solid fa-calendar-week text-2xl text-blue-500"></i><span className="font-bold text-[10px] uppercase">Quỹ Tuần</span>
+        <div className="min-h-screen flex flex-col justify-center p-8 space-y-6 animate-fadeIn text-white">
+            <div className="text-center mb-10">
+                <h2 className="text-4xl font-black italic uppercase tracking-tighter">Treasury</h2>
+                <p className="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em]">Lớp 10A7 OS</p>
+            </div>
+            <div className="grid grid-cols-1 gap-5">
+                <button onClick={() => setMode('weekly')} className="glass p-8 rounded-[3rem] flex items-center justify-between border-l-8 border-blue-500 active:scale-95 transition-all">
+                    <div className="flex items-center gap-6">
+                        <i className="fa-solid fa-calendar-week text-3xl text-blue-500"></i>
+                        <span className="font-black text-lg uppercase text-white">Quỹ Tuần</span>
+                    </div>
+                    <i className="fa-solid fa-chevron-right opacity-20 text-white"></i>
                 </button>
-                <button onClick={() => setMode('special')} className="glass p-6 rounded-[2rem] flex flex-col items-center gap-4 border-b-4 border-orange-500 active:scale-95 text-white">
-                    <i className="fa-solid fa-bolt text-2xl text-orange-500"></i><span className="font-bold text-[10px] uppercase">Đột Xuất</span>
+                <button onClick={() => setMode('special')} className="glass p-8 rounded-[3rem] flex items-center justify-between border-l-8 border-orange-500 active:scale-95 transition-all text-white">
+                    <div className="flex items-center gap-6">
+                        <i className="fa-solid fa-bolt text-3xl text-orange-500"></i>
+                        <span className="font-black text-lg uppercase">Đột Xuất</span>
+                    </div>
+                    <i className="fa-solid fa-chevron-right opacity-20"></i>
                 </button>
-                <button onClick={() => setMode('expense')} className="glass p-6 rounded-[2rem] flex flex-col items-center gap-4 border-b-4 border-red-500 active:scale-95 text-white">
-                    <i className="fa-solid fa-cart-shopping text-2xl text-red-500"></i><span className="font-bold text-[10px] uppercase">Chi Tiêu</span>
+                <button onClick={() => setMode('expense')} className="glass p-8 rounded-[3rem] flex items-center justify-between border-l-8 border-red-500 active:scale-95 transition-all text-white">
+                    <div className="flex items-center gap-6">
+                        <i className="fa-solid fa-cart-shopping text-3xl text-red-500"></i>
+                        <span className="font-black text-lg uppercase">Chi Tiêu</span>
+                    </div>
+                    <i className="fa-solid fa-chevron-right opacity-20"></i>
                 </button>
-                <button onClick={() => setMode('report')} className="glass p-6 rounded-[2rem] flex flex-col items-center gap-4 border-b-4 border-green-500 active:scale-95 text-white">
-                    <i className="fa-solid fa-chart-pie text-2xl text-green-500"></i><span className="font-bold text-[10px] uppercase">Báo Cáo</span>
+                <button onClick={() => setMode('report')} className="glass p-8 rounded-[3rem] flex items-center justify-between border-l-8 border-green-500 active:scale-95 transition-all text-white">
+                    <div className="flex items-center gap-6">
+                        <i className="fa-solid fa-chart-pie text-3xl text-green-500"></i>
+                        <span className="font-black text-lg uppercase">Báo Cáo</span>
+                    </div>
+                    <i className="fa-solid fa-chevron-right opacity-20"></i>
                 </button>
             </div>
-            <button onClick={logout} className="mt-8 opacity-30 text-[10px] font-bold uppercase underline text-center text-white">Thoát hệ thống</button>
+            <button onClick={logout} className="mt-12 opacity-20 text-xs font-black uppercase text-center tracking-widest underline text-white">Thoát hệ thống</button>
         </div>
     );
 
-    // 4. GIAO DIỆN BÁO CÁO MỚI (CHUYÊN NGHIỆP)
-    if (mode === 'report') return (
-        <div className="p-6 pb-24 animate-fadeIn text-white">
-            <header className="flex justify-between items-center mb-8">
-                <button onClick={() => setMode(null)} className="text-xs font-bold text-gray-400 uppercase tracking-widest"><i className="fa-solid fa-chevron-left mr-2"></i>MENU</button>
-                <h2 className="font-black italic uppercase text-sm tracking-tighter">Hệ thống báo cáo</h2>
+    // --- 3. GIAO DIỆN QUỸ TUẦN ---
+    if (mode === 'weekly') return (
+        <div className="pb-24 animate-fadeIn text-white">
+            <header className="p-6 sticky top-0 bg-[#020617]/90 backdrop-blur-xl z-50 flex justify-between items-center border-b border-white/5">
+                <button onClick={() => setMode(null)} className="text-gray-400 font-bold text-xs"><i className="fa-solid fa-chevron-left mr-2"></i>MENU</button>
+                <h2 className="font-black italic uppercase text-sm">Tuần {currentWeek}</h2>
                 <div className="w-10"></div>
             </header>
-
-            {/* KHỐI 1: TỒN QUỸ LỚP (CỐ ĐỊNH) */}
-            <div className="glass p-8 rounded-[2.5rem] border-l-4 border-green-500 bg-green-500/5 mb-8 shadow-2xl relative overflow-hidden">
-                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-1 text-white">Tồn quỹ lớp hiện tại</p>
-                <h3 className="text-4xl font-black text-green-400 tracking-tighter">{stats.classBalance.toLocaleString()}đ</h3>
-                <div className="mt-6 space-y-2 border-t border-white/5 pt-4">
-                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-tight"><span className="opacity-40">Tổng thu quỹ tuần:</span><span className="text-blue-400">+{stats.totalWeeklyIncome.toLocaleString()}đ</span></div>
-                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-tight"><span className="opacity-40">Tổng đã chi chung:</span><span className="text-red-400">-{stats.totalExpense.toLocaleString()}đ</span></div>
-                </div>
-                <i className="fa-solid fa-piggy-bank absolute -right-4 -bottom-4 text-7xl opacity-[0.03]"></i>
+            <div className="flex overflow-x-auto gap-3 py-6 px-4 no-scrollbar bg-white/5">
+                {[...Array(35)].map((_, i) => (
+                    <div key={i} onClick={() => setCurrentWeek(i+1)} className={`min-w-[70px] h-20 rounded-2xl flex flex-col items-center justify-center border transition-all ${currentWeek === i+1 ? 'bg-blue-600 border-blue-400 scale-105' : 'glass opacity-30'}`}>
+                        <span className="text-[10px] font-bold">T.</span><span className="text-xl font-black">{i+1}</span>
+                    </div>
+                ))}
             </div>
-
-            {/* KHỐI 2: CHI TIẾT QUỸ ĐỘT XUẤT (TÁCH RIÊNG) */}
-            <p className="text-[10px] font-black opacity-30 uppercase tracking-[0.2em] ml-2 mb-4 text-orange-500">Quản lý quỹ đột xuất</p>
-            <div className="space-y-4">
-                {specialFunds.length === 0 ? (
-                    <div className="glass p-10 rounded-3xl text-center opacity-20 text-xs font-bold italic">Chưa có khoản thu đột xuất nào...</div>
-                ) : specialFunds.map(f => {
-                    const count = f.payments ? Object.values(f.payments).filter(v => v === true).length : 0;
-                    const totalCollected = count * (f.amount || 0);
-                    const isFinished = f.status === 'done';
-
+            <div className="p-6 space-y-4">
+                <div className="glass p-6 rounded-[2.5rem] border border-blue-500/20 bg-blue-500/5">
+                    <p className="text-[10px] font-black opacity-40 mb-2 uppercase text-center">Tiền quỹ tuần {currentWeek} (đ)</p>
+                    <input type="number" value={weeklyFees[getWeekKey(currentWeek)] || ""} placeholder="5,000"
+                        onChange={(e) => db.collection("settings").doc("weekly_fees").set({ [getWeekKey(currentWeek)]: parseInt(e.target.value) || 0 }, { merge: true })}
+                        className="w-full bg-white/5 p-4 rounded-2xl outline-none font-black text-blue-400 text-center text-2xl" />
+                </div>
+                {students.map(s => {
+                    const wk = getWeekKey(currentWeek);
+                    const isPaid = s.funds && s.funds[wk] === true;
                     return (
-                        <div key={f.id} className={`glass p-5 rounded-[2rem] border border-white/5 transition-all ${isFinished ? 'opacity-40 grayscale-[0.8]' : 'bg-orange-500/5 border-orange-500/20'}`}>
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h4 className={`font-black text-sm uppercase leading-tight ${isFinished ? 'line-through' : 'text-white'}`}>{f.name}</h4>
-                                    <p className="text-[9px] font-bold text-orange-400 uppercase mt-1">Thu: {f.amount?.toLocaleString()}đ / HS</p>
-                                </div>
-                                {/* NÚT TICK ĐÁNH DẤU ĐÃ CHI XONG */}
-                                <button 
-                                    onClick={() => db.collection("special_funds").doc(f.id).update({ status: isFinished ? 'pending' : 'done' })}
-                                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${isFinished ? 'bg-green-600 text-white' : 'glass border-white/10 text-gray-500'}`}
-                                >
-                                    <i className={`fa-solid ${isFinished ? 'fa-check-double' : 'fa-check'}`}></i>
-                                </button>
-                            </div>
-                            <div className="flex justify-between items-center border-t border-white/5 pt-3">
-                                <span className="text-[10px] font-bold opacity-30 uppercase">Đã thu: {count}/{students.length} em</span>
-                                <span className="font-black text-xs text-orange-400">+{totalCollected.toLocaleString()}đ</span>
-                            </div>
+                        <div key={s.id} className="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5">
+                            <span className="font-black text-sm uppercase">{s.name}</span>
+                            <button onClick={() => db.collection("students").doc(s.id).update({[`funds.${wk}`]: !isPaid})} 
+                                className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl ${isPaid ? 'bg-green-600 text-white' : 'bg-white/5 text-gray-600'}`}>
+                                <i className={`fa-solid ${isPaid ? 'fa-check' : 'fa-hand-holding-dollar'}`}></i>
+                            </button>
                         </div>
                     );
                 })}
             </div>
-            
-            <p className="mt-10 text-[8px] text-center opacity-10 font-black uppercase tracking-[0.4em]">10A7 Financial Transparency System</p>
         </div>
     );
 
-    // QUỸ TUẦN, ĐỘT XUẤT, CHI TIÊU (Giữ nguyên logic của file cũ)
-    // Thầy/Cô dán tiếp các phần if(mode === 'weekly')... của file cũ vào đây.
-    return null; 
+    // --- 4. GIAO DIỆN ĐỘT XUẤT ---
+    if (mode === 'special') {
+        const currentFund = specialFunds.find(f => f.id === selectedSpecialId);
+        return (
+            <div className="pb-24 animate-fadeIn text-white">
+                <header className="p-6 sticky top-0 bg-[#020617]/90 backdrop-blur-xl z-50 flex justify-between items-center border-b border-white/5">
+                    <button onClick={() => { setMode(null); setSelectedSpecialId(null); }} className="text-gray-400 font-bold text-xs"><i className="fa-solid fa-chevron-left mr-2"></i>MENU</button>
+                    <h2 className="font-black italic uppercase text-sm">ĐỘT XUẤT</h2><div className="w-10"></div>
+                </header>
+                {!currentFund ? (
+                    <div className="p-6 space-y-4">
+                        <div className="glass p-6 rounded-[2.5rem] border-dashed border-2 border-orange-500/20 bg-orange-500/5">
+                            <input id="spN" placeholder="TÊN KHOẢN THU..." className="w-full bg-white/5 p-4 rounded-xl outline-none text-xs font-black uppercase mb-3 text-white" />
+                            <input id="spA" type="number" placeholder="SỐ TIỀN MỖI HS" className="w-full bg-white/5 p-4 rounded-xl outline-none font-black text-orange-400 mb-4" />
+                            <button onClick={() => { const n = document.getElementById('spN').value; const a = document.getElementById('spA').value; if(n && a) db.collection("special_funds").add({ name: n.toUpperCase(), amount: parseInt(a), date: new Date(), payments: {} }); }} className="w-full py-4 bg-orange-600 rounded-2xl font-black uppercase text-xs">Tạo mới +</button>
+                        </div>
+                        {specialFunds.map(f => (
+                            <div key={f.id} onClick={() => setSelectedSpecialId(f.id)} className="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5 active:scale-95 transition-all text-white">
+                                <div><h4 className="font-black text-sm uppercase">{f.name}</h4><p className="text-[10px] font-bold text-orange-400">{f.amount?.toLocaleString()}đ / HS</p></div>
+                                <i className="fa-solid fa-chevron-right opacity-20"></i>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="p-6 animate-fadeIn">
+                        <button onClick={() => setSelectedSpecialId(null)} className="text-orange-500 font-black text-[10px] uppercase mb-4 underline">Quay lại</button>
+                        <div className="space-y-3 h-[60vh] overflow-y-auto no-scrollbar">
+                            {students.map(s => {
+                                const isPaid = currentFund.payments && currentFund.payments[s.id] === true;
+                                return (
+                                    <div key={s.id} className="glass p-5 rounded-[2.2rem] flex justify-between items-center border border-white/5 text-white">
+                                        <span className="font-black text-sm uppercase">{s.name}</span>
+                                        <button onClick={() => db.collection("special_funds").doc(currentFund.id).update({[`payments.${s.id}`]: !isPaid})} 
+                                            className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl transition-all ${isPaid ? 'bg-orange-600' : 'bg-white/5 text-gray-600'}`}>
+                                            <i className={`fa-solid ${isPaid ? 'fa-check' : 'fa-coins'}`}></i>
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    // --- 5. GIAO DIỆN CHI TIÊU ---
+    if (mode === 'expense') return (
+        <div className="p-6 pb-24 animate-fadeIn text-white">
+            <header className="flex justify-between items-center mb-8 sticky top-0 bg-[#020617]/90 backdrop-blur-xl z-50 py-4 border-b border-white/5">
+                <button onClick={() => setMode(null)} className="text-xs font-bold text-gray-400 uppercase"><i className="fa-solid fa-chevron-left mr-2"></i>MENU</button>
+                <h2 className="font-black italic uppercase text-sm">CHI TIÊU</h2><div className="w-10"></div>
+            </header>
+            <div className="mb-6">
+                <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mb-3 ml-2 text-red-500">Chọn tuần để chi:</p>
+                <div className="flex overflow-x-auto gap-2 no-scrollbar">
+                    {[...Array(35)].map((_, i) => (
+                        <button key={i} onClick={() => setExpenseWeek(i+1)} className={`min-w-[60px] py-4 rounded-xl font-black text-xs border transition-all ${expenseWeek === i+1 ? 'bg-red-600 border-red-400 scale-105' : 'glass opacity-20'}`}>T.{i+1}</button>
+                    ))}
+                </div>
+            </div>
+            <div className="glass p-8 rounded-[3rem] bg-red-500/5 border-l-8 border-red-500 mb-8 shadow-2xl">
+                <p className="text-[8px] font-black text-red-400 uppercase mb-2">Đang chi cho TUẦN {expenseWeek}</p>
+                <input id="exN" placeholder="NỘI DUNG CHI..." className="w-full bg-white/5 p-4 rounded-xl outline-none text-xs font-black uppercase mb-3 text-white border border-white/5" />
+                <input id="exA" type="number" placeholder="SỐ TIỀN" className="w-full bg-white/5 p-4 rounded-xl outline-none font-black text-red-400 mb-4 border border-white/5" />
+                <button onClick={() => {
+                    const n = document.getElementById('exN').value; const a = document.getElementById('exA').value;
+                    if(n && a) { db.collection("expenses").add({ name: n.toUpperCase(), amount: parseInt(a), date: new Date(), week_key: getWeekKey(expenseWeek) }); document.getElementById('exN').value=""; document.getElementById('exA').value=""; }
+                }} className="w-full py-5 bg-red-600 rounded-3xl font-black uppercase text-xs shadow-lg active:scale-95">Xác nhận chi -</button>
+            </div>
+            <div className="space-y-4">
+                {expenses.sort((a,b) => b.date - a.date).map(e => (
+                    <div key={e.id} className="glass p-6 rounded-[2.5rem] flex justify-between items-center border border-white/5 text-white">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-[10px] font-black text-red-500 border border-red-500/20">{e.week_key ? e.week_key.split('_')[1] : '??'}</div>
+                            <div><p className="font-black text-xs uppercase text-white leading-tight">{e.name}</p></div>
+                        </div>
+                        <span className="text-red-400 font-black text-sm">-{e.amount?.toLocaleString()}đ</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    // --- 6. GIAO DIỆN BÁO CÁO (PHẦN MỚI CỦA THẦY/CÔ) ---
+    if (mode === 'report') return (
+        <div className="p-8 pb-32 animate-fadeIn text-white">
+            <header className="flex justify-between items-center mb-10">
+                <button onClick={() => setMode(null)} className="w-12 h-12 glass rounded-full flex items-center justify-center"><i className="fa-solid fa-chevron-left"></i></button>
+                <h2 className="font-black uppercase text-lg italic tracking-tighter text-green-500">Báo cáo lớp</h2>
+                <div className="w-12"></div>
+            </header>
+            <div className="glass p-10 rounded-[3.5rem] border-t-8 border-green-500 bg-green-500/5 mb-10 shadow-2xl relative">
+                <p className="text-xs font-black opacity-40 uppercase mb-2 text-white">Tồn quỹ lớp thực tế</p>
+                <h3 className="text-5xl font-black text-white tracking-tighter">{stats.classBalance.toLocaleString()}đ</h3>
+                <div className="mt-8 pt-6 border-t border-white/5 space-y-3">
+                    <div className="flex justify-between text-[10px] font-bold uppercase"><span className="opacity-40">Thu quỹ tuần:</span><span className="text-blue-400">+{stats.totalWeeklyIncome.toLocaleString()}đ</span></div>
+                    <div className="flex justify-between text-[10px] font-bold uppercase"><span className="opacity-40">Tổng đã chi:</span><span className="text-red-400">-{stats.totalExpense.toLocaleString()}đ</span></div>
+                </div>
+            </div>
+            <p className="text-xs font-black opacity-30 uppercase tracking-[0.3em] mb-6 ml-4 text-orange-500 italic">Quỹ Đột Xuất (Tách riêng)</p>
+            <div className="space-y-5">
+                {specialFunds.map(f => {
+                    const isDone = f.status === 'done';
+                    const count = f.payments ? Object.values(f.payments).filter(v => v === true).length : 0;
+                    return (
+                        <div key={f.id} className={`glass p-8 rounded-[3rem] border border-white/5 flex justify-between items-center transition-all ${isDone ? 'opacity-30 grayscale' : 'bg-orange-500/5 border-orange-500/20'}`}>
+                            <div>
+                                <h4 className={`font-black text-base uppercase ${isDone ? 'line-through opacity-50' : 'text-white'}`}>{f.name}</h4>
+                                <p className="text-xs font-bold text-orange-400">Đã thu: {(count * (f.amount || 0)).toLocaleString()}đ</p>
+                            </div>
+                            <button onClick={() => db.collection("special_funds").doc(f.id).update({status: isDone ? 'pending' : 'done'})}
+                                className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-all ${isDone ? 'bg-green-600 text-white shadow-lg' : 'glass text-gray-600'}`}>
+                                <i className={`fa-solid ${isDone ? 'fa-check-double' : 'fa-check'}`}></i>
+                            </button>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+
+    return null;
 };
