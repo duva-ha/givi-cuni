@@ -12,12 +12,19 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Inter:wght@400;600;800&display=swap');
+        
+        /* Style chung cho Hệ thống */
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #f8fafc; overflow-x: hidden; }
         .hero-gradient { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        
+        /* Style riêng cho MyClass (StudentModule) */
+        .xp-gradient { background: linear-gradient(90deg, #0071e3, #40b3ff); }
+        .card-shadow { box-shadow: 0 8px 30px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02); }
+        
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .animate-fadeIn { animation: fadeIn 0.3s ease-in-out; }
+        .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -27,11 +34,12 @@
     <script src="AdminModule.js" type="text/babel"></script>
     <script src="TreasuryModule.js" type="text/babel"></script>
     <script src="LeaderModule.js" type="text/babel"></script>
+    <script src="StudentModule.js" type="text/babel"></script>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- 1. KẾT NỐI DATABASE ---
+        // --- 1. FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyDQmerSSs0qhO01xNnFWpquZYseDThWxP0",
             authDomain: "lichtruc-e3f82.firebaseapp.com",
@@ -48,61 +56,64 @@
             const [role, setRole] = useState(null);
             const [pass, setPass] = useState("");
             const [students, setStudents] = useState([]);
-            const [specialFunds, setSpecialFunds] = useState([]);
-            const [expenses, setExpenses] = useState([]);
+            const [currentUser, setCurrentUser] = useState(null); // Lưu HS đăng nhập
             const [weeklyFees, setWeeklyFees] = useState({});
+            const [expenses, setExpenses] = useState([]);
+            const [specialFunds, setSpecialFunds] = useState([]);
 
-            // Lắng nghe dữ liệu tập trung từ Firebase
             useEffect(() => {
-                const unsubStd = db.collection("students").orderBy("group").onSnapshot(s => setStudents(s.docs.map(d => ({id: d.id, ...d.data()}))));
-                const unsubSpec = db.collection("special_funds").onSnapshot(s => setSpecialFunds(s.docs.map(d => ({id: d.id, ...d.data()}))));
-                const unsubExp = db.collection("expenses").orderBy("date", "desc").onSnapshot(s => setExpenses(s.docs.map(d => ({id: d.id, ...d.data()}))));
-                const unsubFees = db.collection("settings").doc("fees").onSnapshot(d => setWeeklyFees(d.data() || {}));
-
-                return () => { unsubStd(); unsubSpec(); unsubExp(); unsubFees(); };
+                // Listeners cập nhật thời gian thực
+                db.collection("students").orderBy("group").onSnapshot(s => setStudents(s.docs.map(d => ({id: d.id, ...d.data()}))));
+                db.collection("settings").doc("fees").onSnapshot(d => setWeeklyFees(d.data() || {}));
+                db.collection("expenses").orderBy("date", "desc").onSnapshot(s => setExpenses(s.docs.map(d => ({id: d.id, ...d.data()}))));
+                db.collection("special_funds").onSnapshot(s => setSpecialFunds(s.docs.map(d => ({id: d.id, ...d.data()}))));
             }, []);
 
             const handleLogin = () => {
                 const p = pass.trim().toUpperCase();
-                if (p === "10A7BANK") setRole("TQ");
-                else if (p === "10A7GV") setRole("GV");
+
+                if (p === "10A7GV") setRole("GV");
+                else if (p === "10A7BANK") setRole("TQ");
                 else if (p === "10A7LT") setRole("LT");
-                else alert("MÃ TRUY CẬP KHÔNG ĐÚNG!");
+                else {
+                    // KIỂM TRA ĐĂNG NHẬP HỌC SINH (Nhập Tên)
+                    const found = students.find(s => s.name === p);
+                    if (found) {
+                        setRole("STUDENT");
+                        setCurrentUser(found);
+                    } else {
+                        alert("Mã truy cập hoặc Tên không đúng!");
+                    }
+                }
                 setPass("");
             };
 
-            const logout = () => { if(window.confirm("Bạn muốn đăng xuất?")) setRole(null); };
-
-            // Tránh lỗi undefined khi dữ liệu đang tải
-            const safeStudents = students || [];
+            const logout = () => { if(window.confirm("Đăng xuất?")) { setRole(null); setCurrentUser(null); } };
 
             return (
                 <div className="max-w-md mx-auto min-h-screen">
                     {!role ? (
+                        /* MÀN HÌNH ĐĂNG NHẬP */
                         <div className="h-screen flex items-center justify-center p-8 animate-fadeIn">
                             <div className="w-full max-w-sm space-y-8 text-center">
                                 <div className="w-20 h-20 hero-gradient rounded-[2.5rem] mx-auto flex items-center justify-center shadow-2xl">
-                                    <i className="fa-solid fa-shield-halved text-3xl text-white"></i>
+                                    <i className="fa-solid fa-bolt text-3xl text-white"></i>
                                 </div>
-                                <h1 className="text-4xl font-black italic uppercase">10A7<span className="text-indigo-500">.</span>OS</h1>
-                                <input type="password" placeholder="PASSCODE" className="w-full p-4 glass rounded-3xl text-center font-bold tracking-[0.5em] text-xl outline-none"
+                                <h1 className="text-4xl font-black italic tracking-tighter uppercase">10A7<span className="text-indigo-500">.</span>OS</h1>
+                                <input type="password" placeholder="HỌ TÊN HOẶC MÃ" className="w-full p-4 glass rounded-3xl text-center font-bold text-xl outline-none"
                                     value={pass} onChange={(e) => setPass(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleLogin()} />
-                                <button onClick={handleLogin} className="w-full py-5 hero-gradient rounded-3xl font-black uppercase tracking-widest shadow-lg">Xác nhận</button>
+                                <button onClick={handleLogin} className="w-full py-5 hero-gradient rounded-3xl font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all">Xác nhận</button>
                             </div>
                         </div>
                     ) : role === "GV" ? (
-                        <AdminModule students={safeStudents} db={db} logout={logout} weeklyFees={weeklyFees} />
+                        <AdminModule students={students} db={db} logout={logout} weeklyFees={weeklyFees} />
                     ) : role === "TQ" ? (
-                        <TreasuryModule 
-                            students={safeStudents} 
-                            specialFunds={specialFunds} 
-                            expenses={expenses} 
-                            weeklyFees={weeklyFees} 
-                            db={db} 
-                            logout={logout} 
-                        />
+                        <TreasuryModule students={students} db={db} logout={logout} weeklyFees={weeklyFees} expenses={expenses} specialFunds={specialFunds} />
+                    ) : role === "LT" ? (
+                        <LeaderModule students={students} db={db} logout={logout} />
                     ) : (
-                        <LeaderModule students={safeStudents} db={db} logout={logout} />
+                        /* GIAO DIỆN MYCLASS CỦA HỌC SINH */
+                        <StudentModule student={currentUser} logout={logout} />
                     )}
                 </div>
             );
